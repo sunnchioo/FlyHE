@@ -11,7 +11,7 @@ set(CMAKE_CUDA_COMPILER "/usr/local/cuda-12.6/bin/nvcc")
 #   # set(CMAKE_CUDA_COMPILER "/usr/local/cuda-11.8/bin/nvcc")
 # endif()
 
-project(HElib LANGUAGES CXX CUDA)
+project(FlyHE LANGUAGES CXX CUDA)
 
 # CMAKE config
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
