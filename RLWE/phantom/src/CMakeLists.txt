@@ -1,4 +1,4 @@
-include_directories(${CMAKE_SOURCE_DIR}/RLWE/phantom/include) 
+include_directories(${FLYHE_SOURCE_DIR}/RLWE/phantom/include) 
 
 add_library(phantomfhe STATIC
         context.cu

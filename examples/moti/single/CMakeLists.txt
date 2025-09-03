@@ -13,7 +13,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/benchmark/moti/single)
 
 # openfhe
-# set(OPENFHE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/phantom/thirdparty/openfhe)
+# set(OPENFHE_SOURCE_DIR ${FLYHE_SOURCE_DIR}/phantom/thirdparty/openfhe)
 # set(OPENFHE_BINARY_DIR ${CMAKE_BINARY_DIR}/phantom/thirdparty/openfhe)
 # include_directories(${OPENFHE_SOURCE_DIR}/src/core/include)
 # include_directories(${OPENFHE_SOURCE_DIR}/src/pke/include)
@@ -22,11 +22,11 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/benchmark/moti/single
 # include_directories(${OPENFHE_BINARY_DIR}/src/core)
 # link_libraries(OPENFHEcore OPENFHEpke OPENFHEbinfhe)
 
-include_directories(${CMAKE_SOURCE_DIR}/RLWE/phantom/include)
-# include_directories(${CMAKE_SOURCE_DIR}/RLWE/phantom/bitwise/include)
-include_directories(${CMAKE_SOURCE_DIR}/RLWE/boot/include)
-include_directories(${CMAKE_SOURCE_DIR}/RLWE/boot/include/boostrapping)
-include_directories(${CMAKE_SOURCE_DIR}/RLWE/boot/include/boostrapping/common)
+include_directories(${FLYHE_SOURCE_DIR}/RLWE/phantom/include)
+# include_directories(${FLYHE_SOURCE_DIR}/RLWE/phantom/bitwise/include)
+include_directories(${FLYHE_SOURCE_DIR}/RLWE/boot/include)
+include_directories(${FLYHE_SOURCE_DIR}/RLWE/boot/include/boostrapping)
+include_directories(${FLYHE_SOURCE_DIR}/RLWE/boot/include/boostrapping/common)
 
 include_directories(/usr/local/include)
 include_directories(/usr/local/include/NTL)

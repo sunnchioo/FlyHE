@@ -7,14 +7,14 @@ if(OpenMP_FOUND)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif()
 
-include_directories(${CMAKE_SOURCE_DIR}/RLWE/phantom/include)
-include_directories(${CMAKE_SOURCE_DIR}/RLWE/boot/include)
-include_directories(${CMAKE_SOURCE_DIR}/RLWE/boot/include/boostrapping)
-include_directories(${CMAKE_SOURCE_DIR}/RLWE/boot/include/boostrapping/common)
+include_directories(${FLYHE_SOURCE_DIR}/RLWE/phantom/include)
+include_directories(${FLYHE_SOURCE_DIR}/RLWE/boot/include)
+include_directories(${FLYHE_SOURCE_DIR}/RLWE/boot/include/boostrapping)
+include_directories(${FLYHE_SOURCE_DIR}/RLWE/boot/include/boostrapping/common)
 
-include_directories(${CMAKE_SOURCE_DIR}/LWE/cuTFHEpp/include)
+include_directories(${FLYHE_SOURCE_DIR}/LWE/cuTFHEpp/include)
 
-include_directories(${CMAKE_SOURCE_DIR}/conversion/include)
+include_directories(${FLYHE_SOURCE_DIR}/conversion/include)
 
 include_directories(/usr/local/include)
 include_directories(/usr/local/include/NTL)

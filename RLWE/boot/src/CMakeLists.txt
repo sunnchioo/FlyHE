@@ -1,6 +1,6 @@
-include_directories(${CMAKE_SOURCE_DIR}/RLWE/boot/include)
-include_directories(${CMAKE_SOURCE_DIR}/RLWE/boot/include/bootstrapping)
-include_directories(${CMAKE_SOURCE_DIR}/RLWE/boot/include/bootstrapping/common)
+include_directories(${FLYHE_SOURCE_DIR}/RLWE/boot/include)
+include_directories(${FLYHE_SOURCE_DIR}/RLWE/boot/include/bootstrapping)
+include_directories(${FLYHE_SOURCE_DIR}/RLWE/boot/include/bootstrapping/common)
 
 include_directories(/usr/local/include)
 include_directories(/usr/local/include/NTL)

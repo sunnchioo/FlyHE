@@ -1,8 +1,8 @@
 # set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # set(CMAKE_CUDA_SEPARABLE_COMPILATION ON)
 
-include_directories(${CMAKE_SOURCE_DIR}/LWE/cuTFHEpp/thirdparty/TFHEpp/include)
-include_directories(${CMAKE_SOURCE_DIR}/LWE/cuTFHEpp/include)
+include_directories(${FLYHE_SOURCE_DIR}/LWE/cuTFHEpp/thirdparty/TFHEpp/include)
+include_directories(${FLYHE_SOURCE_DIR}/LWE/cuTFHEpp/include)
 
 file(GLOB_RECURSE CUTFHEPP_SRCS 
     ${CMAKE_CURRENT_SOURCE_DIR}/*.cu )

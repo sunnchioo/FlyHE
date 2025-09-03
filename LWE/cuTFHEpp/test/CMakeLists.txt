@@ -2,7 +2,7 @@
 # set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib)
 # set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/cuTFHEpp/tests)
 
-include_directories(${CMAKE_SOURCE_DIR}/LWE/cuTFHEpp/include)
+include_directories(${FLYHE_SOURCE_DIR}/LWE/cuTFHEpp/include)
 
 option(CUTFHEPP_BUILD_TESTS "Build the cuTFHEpp tests" ON)
 

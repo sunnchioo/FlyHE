@@ -7,10 +7,10 @@ add_executable(example_context
         # example.cu
 )
 target_link_libraries(example_context PRIVATE Phantom)
-target_include_directories(example_context PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_include_directories(example_context PUBLIC ${FLYHE_SOURCE_DIR}/include)
 
 add_executable(example_serialization
         serialization.cu
 )
 target_link_libraries(example_serialization PRIVATE Phantom)
-target_include_directories(example_serialization PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_include_directories(example_serialization PUBLIC ${FLYHE_SOURCE_DIR}/include)

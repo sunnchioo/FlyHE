@@ -68,7 +68,7 @@ if(NOT MSVC)
   # Add the coverage target
   add_custom_target(coverage)
   add_custom_command(TARGET coverage
-    COMMAND "${CMAKE_SOURCE_DIR}/scripts/updatecoverage.sh" ${CMAKE_SOURCE_DIR}
+    COMMAND "${FLYHE_SOURCE_DIR}/scripts/updatecoverage.sh" ${FLYHE_SOURCE_DIR}
     WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/coverage")
 
   # add tests to coverage
