@@ -40,3 +40,27 @@ Some files contain the modified code from the [Phantom](https://github.com/encry
 Some files contain the modified code from the [Opera](https://github.com/hku-systems/Opera) version licensed under [MIT License](https://github.com/hku-systems/Opera/blob/main/LICENSE).
 
 Some files contain the modified code from the [TFHEpp](https://github.com/virtualsecureplatform/TFHEpp), which is licensed under the [Apache License 2.0](https://github.com/virtualsecureplatform/TFHEpp/blob/master/LICENSE).
+
+
+## 📊 Project Statistics
+
+### 🌟 Star History
+<a href="https://star-history.com/#sunnchioo/FlyHE&Date">
+ <img src="https://api.star-history.com/svg?repos=sunnchioo/FlyHE&type=Date" alt="Star History Chart">
+</a>
+
+### 📉 Traffic Trends
+> **Note:** These charts update daily at 00:00 UTC.
+
+| Visitor Views | Git Clones |
+| :---: | :---: |
+| ![Views Count](github-repo-stats/views.svg) | ![Clones Count](github-repo-stats/clones.svg) |
+
+<details>
+<summary><strong>🔍 Click to see detailed traffic sources</strong></summary>
+
+| Top Referrers | Top Paths |
+| :---: | :---: |
+| ![Referrers](github-repo-stats/referrers.svg) | ![Paths](github-repo-stats/paths.svg) |
+
+</details>
