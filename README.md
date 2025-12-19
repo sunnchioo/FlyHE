@@ -49,20 +49,9 @@ Some files contain the modified code from the [TFHEpp](https://github.com/virtua
  <img src="https://api.star-history.com/svg?repos=sunnchioo/FlyHE&type=Date" alt="Star History Chart">
 </a>
 
-### 📉 Traffic Trends
-> **Note:** These charts update daily at 00:00 UTC.
+### 📉 Traffic Analytics
+GitHub's native traffic insights only retain data for the past 14 days. This project utilizes an automated GitHub Action to persistently archive traffic data and generate long-term historical trends.
 
-| Visitor Views | Git Clones |
-| :---: | :---: |
-| ![Views Count](https://raw.githubusercontent.com/sunnchioo/FlyHE/github-repo-stats/views.svg) | ![Clones Count](https://raw.githubusercontent.com/sunnchioo/FlyHE/github-repo-stats/clones.svg) |
+[![View Traffic Report](https://img.shields.io/badge/View-Traffic_Report-blue?style=for-the-badge&logo=google-analytics)](https://sunnchioo.github.io/FlyHE/sunnchioo/FlyHE/latest-report/report.html)
 
-<details>
-<summary><strong>🔍 Click to see detailed traffic sources</strong></summary>
-
-| Top Referrers | Top Paths |
-| :---: | :---: |
-| ![Referrers](https://raw.githubusercontent.com/sunnchioo/FlyHE/github-repo-stats/referrers.svg) | ![Paths](https://raw.githubusercontent.com/sunnchioo/FlyHE/github-repo-stats/paths.svg) |
-
-</details>
-
-</details>
+> **Note:** Click the button above to view the detailed interactive report, including historical Views, Clones, and Top Referrers.
