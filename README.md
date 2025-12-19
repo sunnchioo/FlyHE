@@ -54,13 +54,15 @@ Some files contain the modified code from the [TFHEpp](https://github.com/virtua
 
 | Visitor Views | Git Clones |
 | :---: | :---: |
-| ![Views Count](github-repo-stats/views.svg) | ![Clones Count](github-repo-stats/clones.svg) |
+| ![Views Count](https://raw.githubusercontent.com/sunnchioo/FlyHE/github-repo-stats/views.svg) | ![Clones Count](https://raw.githubusercontent.com/sunnchioo/FlyHE/github-repo-stats/clones.svg) |
 
 <details>
 <summary><strong>🔍 Click to see detailed traffic sources</strong></summary>
 
 | Top Referrers | Top Paths |
 | :---: | :---: |
-| ![Referrers](github-repo-stats/referrers.svg) | ![Paths](github-repo-stats/paths.svg) |
+| ![Referrers](https://raw.githubusercontent.com/sunnchioo/FlyHE/github-repo-stats/referrers.svg) | ![Paths](https://raw.githubusercontent.com/sunnchioo/FlyHE/github-repo-stats/paths.svg) |
+
+</details>
 
 </details>
