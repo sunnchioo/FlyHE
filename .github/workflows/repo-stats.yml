@@ -1,0 +1,22 @@
+name: Traffic Statistics Logger
+
+on:
+  schedule:
+    # Run daily at 00:00 UTC (08:00 Beijing Time)
+    - cron: "0 0 * * *"
+  # Allow manual trigger for testing
+  workflow_dispatch:
+
+jobs:
+  collect-traffic:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Essential permission to push generated charts back to repo
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Generate Traffic Charts
+        uses: jgehrcke/github-repo-stats@v1
+        with:
+          # Uses the built-in GITHUB_TOKEN
+          ghtoken: ${{ secrets.GITHUB_TOKEN }}
