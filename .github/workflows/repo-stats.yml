@@ -2,21 +2,21 @@ name: Traffic Statistics Logger
 
 on:
   schedule:
-    # Run daily at 00:00 UTC (08:00 Beijing Time)
+    # 每天 UTC 00:00 (北京时间 08:00) 自动运行
     - cron: "0 0 * * *"
-  # Allow manual trigger for testing
+  # 允许手动触发以进行测试
   workflow_dispatch:
 
 jobs:
   collect-traffic:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Essential permission to push generated charts back to repo
+      contents: write
     steps:
       - uses: actions/checkout@v3
-
+      
       - name: Generate Traffic Charts
         uses: jgehrcke/github-repo-stats@v1.4.2
         with:
-          # Uses the built-in GITHUB_TOKEN
-          ghtoken: ${{ secrets.GITHUB_TOKEN }}
+          # 使用拥有 repo 权限的个人 Token
+          ghtoken: ${{ secrets.TRAFFIC_TOKEN }}
