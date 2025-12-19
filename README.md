@@ -8,7 +8,8 @@ Currently, FlyHE supports the following FHE schemes:
 
 By leveraging GPU parallelism, FlyHE aims to significantly improve the computational efficiency of homomorphic operations, making it suitable for research-oriented and experimental scenarios involving high-throughput encrypted computation.  
 
-This library is **research-oriented in nature**, primarily intended for academic research and experimental evaluation rather than production deployment. It is under active development and will be continuously updated with new features, optimizations, and supported schemes.
+This library is **research-oriented in nature**, primarily intended for academic research and experimental evaluation rather than production deployment. 
+It is **under active development** and will be continuously updated with new features, optimizations, and supported schemes.
 
 ---
 
