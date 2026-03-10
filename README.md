@@ -40,3 +40,17 @@ Some files contain the modified code from the [Phantom](https://github.com/encry
 Some files contain the modified code from the [Opera](https://github.com/hku-systems/Opera) version licensed under [MIT License](https://github.com/hku-systems/Opera/blob/main/LICENSE).
 
 Some files contain the modified code from the [TFHEpp](https://github.com/virtualsecureplatform/TFHEpp), which is licensed under the [Apache License 2.0](https://github.com/virtualsecureplatform/TFHEpp/blob/master/LICENSE).
+
+
+## 📊 Project Statistics 
+
+### 🌟 Star History 
+<a href="https://star-history.com/#sunnchioo/FlyHE&Date"> <img src="https://api.star-history.com/svg?repos=sunnchioo/FlyHE&type=Date" alt="Star History Chart"> </a> 
+
+
+### 📉 Traffic Analytics 
+GitHub's native traffic insights only retain data for the past 14 days. This project utilizes an automated GitHub Action to persistently archive traffic data and generate long-term historical trends. 
+
+[![View Traffic Report](https://img.shields.io/badge/View-Traffic_Report-blue?style=for-the-badge&logo=google-analytics)](https://sunnchioo.github.io/FlyHE/sunnchioo/FlyHE/latest-report/report.html) 
+
+> **Note:** Click the button above to view the detailed interactive report, including historical Views, Clones, and Top Referrers.
