@@ -164,7 +164,7 @@ int main() {
     ckks_evaluator.print_decrypted_ct(cipher, 10);
 
     // Mod switch to the lowest level
-    for (int i = 0; i < total_level; i++) {
+    for (int i = 0; i < total_level - 3; i++) {
         ckks_evaluator.evaluator.mod_switch_to_next_inplace(cipher);
     }
 
@@ -184,7 +184,7 @@ int main() {
     // ckks_evaluator.print_decrypted_ct(cipher, 10);
 
     PhantomCiphertext rtn;
-    bootstrapper.bootstrap_3(rtn, cipher);
+    bootstrapper.bootstrap_slim_3(rtn, cipher);
 
     duration<double> sec = system_clock::now() - start;
     std::cout << "Bootstrapping took: " << sec.count() * 1000 << " ms" << endl;

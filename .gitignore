@@ -1,5 +1,10 @@
 build/
 
+LWE/key/
+LWE/*.key
+
+examples/*
+
 ### VisualStudioCode template
 .vscode/*
 # .vscode/*

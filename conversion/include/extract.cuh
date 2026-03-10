@@ -36,29 +36,29 @@ namespace conver {
     // extern unique_ptr<LWEContext> lwe_context;
 
     /************************ cuda kernel **************************/
-    __global__ void multiply_scalar_poly(const uint64_t *operand, const uint64_t scalar, const DModulus *modulus, uint64_t *result, const uint64_t poly_degree, const uint64_t coeff_mod_size);
-    __global__ void extract_lwe_part(uint64_t *lwe_ct_a, uint64_t *lwe_ct_b,
-                                     const uint64_t *rlwe_ct_1, const uint64_t *rlwe_ct_0, const DModulus *modulus, size_t degree, size_t nmoduli,
+    __global__ void multiply_scalar_poly(const uint64_t* operand, const uint64_t scalar, const DModulus* modulus, uint64_t* result, const uint64_t poly_degree, const uint64_t coeff_mod_size);
+    __global__ void extract_lwe_part(uint64_t* lwe_ct_a, uint64_t* lwe_ct_b,
+                                     const uint64_t* rlwe_ct_1, const uint64_t* rlwe_ct_0, const DModulus* modulus, size_t degree, size_t nmoduli,
                                      const size_t extract_indices);
     // __global__ void add_uint_mod_and_trans_type(uint32_t *lwe_ct_data0, uint64_t *lwe_ct_a, size_t n, uint64_t *lwe_ct_b, Modulus modulus);
-    __global__ void add_uint_mod(uint64_t *lwe_ct_a, uint64_t *lwe_ct_b, uint64_t q0);
-    __global__ void reverse_and_negate_kernel(uint64_t *arr, int extract_index, int n, uint64_t q0);
-    __global__ void trans_type(uint32_t *dst, uint64_t *src, int len, double rescale);
-    __global__ void rescale_and_trans(uint64_t *dst, uint64_t *src, int len, double rescale);
-    __global__ void shift_mod_fusion(const uint64_t *input, uint64_t *output, size_t size, uint64_t w_mod, uint64_t shift);
-    __global__ void reverse_transform_fusion(uint64_t *lwe_ct0, size_t n, uint64_t p0);
+    __global__ void add_uint_mod(uint64_t* lwe_ct_a, uint64_t* lwe_ct_b, uint64_t q0);
+    __global__ void reverse_and_negate_kernel(uint64_t* arr, int extract_index, int n, uint64_t q0);
+    __global__ void trans_type(uint32_t* dst, uint64_t* src, int len, double rescale);
+    __global__ void rescale_and_trans(uint64_t* dst, uint64_t* src, int len, double rescale);
+    __global__ void shift_mod_fusion(const uint64_t* input, uint64_t* output, size_t size, uint64_t w_mod, uint64_t shift);
+    __global__ void reverse_transform_fusion(uint64_t* lwe_ct0, size_t n, uint64_t p0);
     __global__ void dummy_kernel(int sleep_ms);
 
     /************************ alg **************************/
-    void SampleExtract(trlwevaluator &trlwer, std::vector<RLWE2LWECt> &lwe_ct, PhantomCiphertext &rlwe_cipher, std::vector<size_t> &extract_indices);
-    void ExternalProduct(LWEContext *lwe_context, PhantomCiphertext &ct, const PhantomCiphertext *key_array, const int ndigits, const uint32_t decompose_base);
-    void ExternalProduct(LWEContext *lwe_context, PhantomCiphertext &ct, const PhantomCiphertext *key_array, const int ndigits, const uint32_t decompose_base, const cuda_stream_wrapper &stream_wrapper);
+    void SampleExtract(trlwevaluator& trlwer, std::vector<RLWE2LWECt>& lwe_ct, PhantomCiphertext& rlwe_cipher, std::vector<size_t>& extract_indices);
+    void ExternalProduct(LWEContext* lwe_context, PhantomCiphertext& ct, const PhantomCiphertext* key_array, const int ndigits, const uint32_t decompose_base);
+    void ExternalProduct(LWEContext* lwe_context, PhantomCiphertext& ct, const PhantomCiphertext* key_array, const int ndigits, const uint32_t decompose_base, const cuda_stream_wrapper& stream_wrapper);
 
     template <typename Lvl>
-    void SetAndExtractFirst(LWEContext *lwe_context, TFHEpp::TLWE<Lvl> *d_lwe_n, const PhantomCiphertext &rlwe_n, const RLWE2LWECt &lwe_N) {
+    void SetAndExtractFirst(LWEContext* lwe_context, TFHEpp::TLWE<Lvl>* d_lwe_n, const PhantomCiphertext& rlwe_n, const RLWE2LWECt& lwe_N) {
         int extract_index = 0;
 
-        const auto &s = phantom::util::global_variables::default_stream->get_stream();
+        const auto& s = phantom::util::global_variables::default_stream->get_stream();
 
         if (rlwe_n.size() != 2) {
             throw std::invalid_argument(
@@ -69,7 +69,7 @@ namespace conver {
             throw std::invalid_argument("SampleExtract: require non_ntt cipher");
         }
 
-        const auto &working_context = lwe_context->last_context_data();
+        const auto& working_context = lwe_context->last_context_data();
         const size_t n = working_context.parms().poly_modulus_degree();
         auto mod_q0 = working_context.parms().coeff_modulus().front();
         const uint64_t q0 = mod_q0.value();
@@ -83,7 +83,7 @@ namespace conver {
         // add_uint_mod_and_trans_type<<<gridDimGlb, blockDimGlb, 0, s>>>(lwe_n_data, rlwe_n.data(), n, lwe_N.b.get(), mod_q0);
         add_uint_mod<<<1, 1, 0, s>>>(rlwe_n.data(), lwe_N.b.get(), q0);
 
-        uint64_t *lwe_ct_ptr = lwe_n_data.get();
+        uint64_t* lwe_ct_ptr = lwe_n_data.get();
         CHECK_CUDA_ERROR(cudaMemcpyAsync(lwe_ct_ptr, rlwe_n.data(1), n * sizeof(uint64_t), cudaMemcpyDeviceToDevice, s));
         CHECK_CUDA_ERROR(cudaMemcpyAsync(lwe_ct_ptr + n, rlwe_n.data(0), sizeof(uint64_t), cudaMemcpyDeviceToDevice, s));
 
@@ -94,13 +94,13 @@ namespace conver {
         double rescale = static_cast<double>(1ULL << 58) / q0;
         size_t gridDimGlb = (n + 1 + blockDimGlb.x - 1) / blockDimGlb.x;
         // trans_type<<<gridDimGlb, blockDimGlb, 0, s>>>(d_lwe_n->data(), lwe_ct_ptr, n + 1, rescale);
-        uint64_t *dst = d_lwe_n->data();
+        uint64_t* dst = d_lwe_n->data();
         rescale_and_trans<<<gridDimGlb, blockDimGlb, 0, s>>>(dst, lwe_ct_ptr, n + 1, rescale);
     }
 
     template <typename Lvl>
-    void SetAndExtractFirst(LWEContext *lwe_context, TFHEpp::TLWE<Lvl> *d_lwe_n, const PhantomCiphertext &rlwe_n, const RLWE2LWECt &lwe_N, const cuda_stream_wrapper &stream_wrapper) {
-        const auto &s = stream_wrapper.get_stream();
+    void SetAndExtractFirst(LWEContext* lwe_context, TFHEpp::TLWE<Lvl>* d_lwe_n, const PhantomCiphertext& rlwe_n, const RLWE2LWECt& lwe_N, const cuda_stream_wrapper& stream_wrapper) {
+        const auto& s = stream_wrapper.get_stream();
         if (rlwe_n.size() != 2) {
             throw std::invalid_argument(
                 "SampleExtract: require rlwe_n cipher of size 2");
@@ -110,7 +110,7 @@ namespace conver {
             throw std::invalid_argument("SampleExtract: require non_ntt cipher");
         }
 
-        const auto &working_context = lwe_context->last_context_data();
+        const auto& working_context = lwe_context->last_context_data();
         const size_t n = working_context.parms().poly_modulus_degree();
         auto mod_q0 = working_context.parms().coeff_modulus().front();
         const uint64_t q0 = mod_q0.value();
@@ -125,7 +125,8 @@ namespace conver {
         add_uint_mod<<<1, 1, 0, s>>>(rlwe_n.data(0), lwe_N.b.get(), q0);
 
         // uint64_t *lwe_ct_ptr = lwe_n_data.get();
-        uint64_t *lwe_ct_ptr = d_lwe_n->data();
+        uint64_t* lwe_ct_ptr = d_lwe_n->data();
+
         CHECK_CUDA_ERROR(cudaMemcpyAsync(lwe_ct_ptr, rlwe_n.data(1), n * sizeof(uint64_t), cudaMemcpyDeviceToDevice, s));
         CHECK_CUDA_ERROR(cudaMemcpyAsync(lwe_ct_ptr + n, rlwe_n.data(0), sizeof(uint64_t), cudaMemcpyDeviceToDevice, s));
 
@@ -141,15 +142,15 @@ namespace conver {
     }
 
     template <typename Lvl>
-    void LWEKeySwitch(LWEContext *lwe_context, TFHEpp::TLWE<Lvl> *d_lwe_n, const RLWE2LWECt &lwe_N, const GPUDecomposedLWEKSwitchKey &key) {
-        const auto &s = phantom::util::global_variables::default_stream->get_stream();
+    void LWEKeySwitch(LWEContext* lwe_context, TFHEpp::TLWE<Lvl>* d_lwe_n, const RLWE2LWECt& lwe_N, const GPUDecomposedLWEKSwitchKey& key) {
+        const auto& s = phantom::util::global_variables::default_stream->get_stream();
 
         const size_t N = lwe_N.a.coeff_count();
         const size_t n = Lvl::n;
         const size_t key_sze = N / n;
         const size_t ndigits = key.ndigits_;
 
-        const auto &working_context = lwe_context->last_context_data();
+        const auto& working_context = lwe_context->last_context_data();
         // std::cout << "working_context.chain_index(): " << working_context.chain_index() << std::endl;
 
         if (key_sze * ndigits != key.parts_.size()) {
@@ -209,8 +210,8 @@ namespace conver {
     }
 
     template <typename Lvl>
-    void LWEKeySwitch(LWEContext *lwe_context, TFHEpp::TLWE<Lvl> *d_lwe_n, const RLWE2LWECt &lwe_N, const GPUDecomposedLWEKSwitchKey &key, const cuda_stream_wrapper &stream_wrapper) {
-        const auto &s = stream_wrapper.get_stream();
+    void LWEKeySwitch(LWEContext* lwe_context, TFHEpp::TLWE<Lvl>* d_lwe_n, const RLWE2LWECt& lwe_N, const GPUDecomposedLWEKSwitchKey& key, const cuda_stream_wrapper& stream_wrapper) {
+        const auto& s = stream_wrapper.get_stream();
 
         // std::cout << "Stream Address: " << s << std::endl;
 
@@ -219,7 +220,7 @@ namespace conver {
         const size_t key_sze = N / n;
         const size_t ndigits = key.ndigits_;
 
-        const auto &working_context = lwe_context->last_context_data();
+        const auto& working_context = lwe_context->last_context_data();
         // std::cout << "working_context.chain_index(): " << working_context.chain_index() << std::endl;
 
         if (key_sze * ndigits != key.parts_.size()) {
@@ -287,13 +288,13 @@ namespace conver {
     }
 
     template <typename Lvl>
-    void ExtractCoeffs(trlwevaluator &trlwer, LWEContext *lwe_context, PhantomCiphertext &rlwe_cipher, Pointer<cuTLWE<Lvl>> &lwe_ciphers, std::vector<size_t> &extract_indices, GPUDecomposedLWEKSwitchKey &extractKey) {
+    void ExtractCoeffs(trlwevaluator& trlwer, LWEContext* lwe_context, PhantomCiphertext& rlwe_cipher, Pointer<cuTLWE<Lvl>>& lwe_ciphers, std::vector<size_t>& extract_indices, GPUDecomposedLWEKSwitchKey& extractKey) {
         // Pointer<cuTLWE<LvlR>> lwe_N_ciphers(extract_indices.size());
         std::vector<RLWE2LWECt> lwe_N_ct(extract_indices.size());
         // std::cout << "Extract Coeffs " << std::endl;
         // std::cout << "rlwe_cipher.is_ntt_form(): " << rlwe_cipher.is_ntt_form() << std::endl;
-        const auto &stream_wrapper = phantom::util::global_variables::default_stream;
-        const auto &s = stream_wrapper->get_stream();
+        const auto& stream_wrapper = phantom::util::global_variables::default_stream;
+        const auto& s = stream_wrapper->get_stream();
         {
             CUDATimer timer("SampleExtract", s);
             timer.start();
@@ -344,7 +345,7 @@ namespace conver {
         {
             CUDATimer timer("LWEKeySwitch", s);
             timer.start();
-            TFHEpp::TLWE<Lvl> *lwe_ciphers_ptr = lwe_ciphers->template get<Lvl>();
+            TFHEpp::TLWE<Lvl>* lwe_ciphers_ptr = lwe_ciphers->template get<Lvl>();
             for (size_t i = 0; i < extract_indices.size(); i++) {
                 LWEKeySwitch<Lvl>(lwe_context, lwe_ciphers_ptr + i, lwe_N_ct[i], extractKey, *stream_wrapper);
             }
@@ -377,15 +378,15 @@ namespace conver {
     }
 
     /************************ function ****************************/
-    void GenExtractKey(const trlwevaluator &trlwer, LWEContext *lwe_context, GPUDecomposedLWEKSwitchKey &extractKey, const TFHESecretKey &lwe_sk, const PhantomSecretKey &rlwe_sk);
+    void GenExtractKey(const trlwevaluator& trlwer, LWEContext* lwe_context, GPUDecomposedLWEKSwitchKey& extractKey, const TFHESecretKey& lwe_sk, const PhantomSecretKey& rlwe_sk);
 
-    void RLWEToLWEs(const PhantomContext &context, PhantomCiphertext &rlwe_cipher, std::vector<std::vector<TLWELvl1>> &lwe_ciphers);
+    void RLWEToLWEs(const PhantomContext& context, PhantomCiphertext& rlwe_cipher, std::vector<std::vector<TLWELvl1>>& lwe_ciphers);
 
     template <typename Lvl>
-    void RLWEToLWEs(trlwevaluator &trlwer, LWEContext *lwe_context, PhantomCiphertext &rlwe_cipher, Pointer<cuTLWE<Lvl>> &lwe_ciphers, std::vector<size_t> &extract_indices, GPUDecomposedLWEKSwitchKey &extractKey) {
+    void RLWEToLWEs(trlwevaluator& trlwer, LWEContext* lwe_context, PhantomCiphertext& rlwe_cipher, Pointer<cuTLWE<Lvl>>& lwe_ciphers, std::vector<size_t>& extract_indices, GPUDecomposedLWEKSwitchKey& extractKey) {
         std::cout << "RLWEToLWEs " << std::endl;
 
-        auto &context_data = trlwer.ckks->context->get_context_data(rlwe_cipher.chain_index());
+        auto& context_data = trlwer.ckks->context->get_context_data(rlwe_cipher.chain_index());
 
         PhantomCiphertext tmpct0, tmpct1;
         // slot to coeff
@@ -395,11 +396,12 @@ namespace conver {
 
         // trlwer.ckksboot->slottocoeff_full_3(tmpct0, rlwe_cipher);
 
-        const auto &s = phantom::util::global_variables::default_stream->get_stream();
+        const auto& s = phantom::util::global_variables::default_stream->get_stream();
         {
             CUDATimer timer("slottocoeff_3", s);
             timer.start();
-            trlwer.ckksboot->slottocoeff_full_3(tmpct0, rlwe_cipher);
+            // trlwer.ckksboot->slottocoeff_full_3(tmpct0, rlwe_cipher);
+            trlwer.ckksboot->slottocoeff_sparse_3(tmpct0, rlwe_cipher);  // logn=7
             timer.stop();
         }
 
@@ -428,10 +430,10 @@ namespace conver {
     // template void RLWEToLWEs<TFHEpp::lvl1param>(trlwevaluator &, PhantomCiphertext &, Pointer<cuTLWE<TFHEpp::lvl1param>> &, std::vector<uint64_t> &, GPUDecomposedLWEKSwitchKey &);
     // template void SetAndExtractFirst<TFHEpp::lvl1param>(TFHEpp::TLWE<TFHEpp::lvl1param> *, const PhantomCiphertext &, const RLWE2LWECt &);
 
-    template void LWEKeySwitch<TFHEpp::lvl1Lparam>(LWEContext *, TFHEpp::TLWE<TFHEpp::lvl1Lparam> *, const RLWE2LWECt &, const GPUDecomposedLWEKSwitchKey &);
-    template void LWEKeySwitch<TFHEpp::lvl1Lparam>(LWEContext *, TFHEpp::TLWE<TFHEpp::lvl1Lparam> *, const RLWE2LWECt &, const GPUDecomposedLWEKSwitchKey &, const cuda_stream_wrapper &);
-    template void ExtractCoeffs<TFHEpp::lvl1Lparam>(trlwevaluator &, LWEContext *, PhantomCiphertext &, Pointer<cuTLWE<TFHEpp::lvl1Lparam>> &, std::vector<size_t> &, GPUDecomposedLWEKSwitchKey &);
-    template void RLWEToLWEs<TFHEpp::lvl1Lparam>(trlwevaluator &, LWEContext *, PhantomCiphertext &, Pointer<cuTLWE<TFHEpp::lvl1Lparam>> &, std::vector<uint64_t> &, GPUDecomposedLWEKSwitchKey &);
-    template void SetAndExtractFirst<TFHEpp::lvl1Lparam>(LWEContext *, TFHEpp::TLWE<TFHEpp::lvl1Lparam> *, const PhantomCiphertext &, const RLWE2LWECt &);
-    template void SetAndExtractFirst<TFHEpp::lvl1Lparam>(LWEContext *, TFHEpp::TLWE<TFHEpp::lvl1Lparam> *, const PhantomCiphertext &, const RLWE2LWECt &, const cuda_stream_wrapper &);
+    template void LWEKeySwitch<TFHEpp::lvl1Lparam>(LWEContext*, TFHEpp::TLWE<TFHEpp::lvl1Lparam>*, const RLWE2LWECt&, const GPUDecomposedLWEKSwitchKey&);
+    template void LWEKeySwitch<TFHEpp::lvl1Lparam>(LWEContext*, TFHEpp::TLWE<TFHEpp::lvl1Lparam>*, const RLWE2LWECt&, const GPUDecomposedLWEKSwitchKey&, const cuda_stream_wrapper&);
+    template void ExtractCoeffs<TFHEpp::lvl1Lparam>(trlwevaluator&, LWEContext*, PhantomCiphertext&, Pointer<cuTLWE<TFHEpp::lvl1Lparam>>&, std::vector<size_t>&, GPUDecomposedLWEKSwitchKey&);
+    template void RLWEToLWEs<TFHEpp::lvl1Lparam>(trlwevaluator&, LWEContext*, PhantomCiphertext&, Pointer<cuTLWE<TFHEpp::lvl1Lparam>>&, std::vector<uint64_t>&, GPUDecomposedLWEKSwitchKey&);
+    template void SetAndExtractFirst<TFHEpp::lvl1Lparam>(LWEContext*, TFHEpp::TLWE<TFHEpp::lvl1Lparam>*, const PhantomCiphertext&, const RLWE2LWECt&);
+    template void SetAndExtractFirst<TFHEpp::lvl1Lparam>(LWEContext*, TFHEpp::TLWE<TFHEpp::lvl1Lparam>*, const PhantomCiphertext&, const RLWE2LWECt&, const cuda_stream_wrapper&);
 }

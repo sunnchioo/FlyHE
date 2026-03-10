@@ -68,7 +68,7 @@ void SoftmaxEvaluator::findmax(PhantomCiphertext &input, long points, PhantomCip
         ckks->evaluator.rotate_vector(input, (1 << (idepth + 1)) - 1, *(ckks->galois_keys), temp);
         // ckks->print_decrypted_ct(input, 10, "--dis0");
         // ckks->print_decrypted_ct(temp, 10, "--dis1");
-        compare(input, temp, bool_temp); // 18 + 3
+        compare(input, temp, bool_temp); // 19 个 level
         // std::cout << "after compare level: " << bool_temp[0].coeff_modulus_size() << " chain: " << bool_temp[0].chain_index() << std::endl;
         // ckks->print_decrypted_ct(bool_temp[0], 10, "bool_temp[0]");
         // ckks->print_decrypted_ct(bool_temp[1], 10, "bool_temp[1]");
@@ -236,7 +236,7 @@ void SoftmaxEvaluator::softmax_scaled(PhantomCiphertext &x, PhantomCiphertext &r
         CUDATimer timer("max", 0);
         timer.start();
 
-        findmax(x, len, max);
+        findmax(x, len, max);                              // 17个level
         ckks->evaluator.sub_inplace_reduced_error(x, max); // x = x - max
 
         timer.stop();
@@ -249,7 +249,7 @@ void SoftmaxEvaluator::softmax_scaled(PhantomCiphertext &x, PhantomCiphertext &r
         ckks->evaluator.rotate_vector(x, -len, *ckks->galois_keys, tmp);
         ckks->evaluator.add_inplace(x, tmp); // 可以保证前 len 个都为 sum(exp(x_i))
 
-        exp_x = ckks->exp(x);
+        exp_x = ckks->exp(x); // 9 个level
 
         timer.stop();
     }
@@ -278,15 +278,15 @@ void SoftmaxEvaluator::softmax_scaled(PhantomCiphertext &x, PhantomCiphertext &r
 
         ckks->encoder.encode(0.01, res.params_id(), res.scale(), delta);
         ckks->evaluator.multiply_plain_inplace(res, delta);
-        ckks->evaluator.rescale_to_next_inplace(res);
+        ckks->evaluator.rescale_to_next_inplace(res); // 1 个 level
 
-        res = ckks->inverse(res);
+        res = ckks->inverse(res); // 8 个 level
 
         // Recover 1/res
 
         ckks->encoder.encode(0.01, res.params_id(), res.scale(), delta);
         ckks->evaluator.multiply_plain_inplace(res, delta);
-        ckks->evaluator.rescale_to_next_inplace(res);
+        ckks->evaluator.rescale_to_next_inplace(res); // 1 个 level
 
         timer.stop();
     }
@@ -298,7 +298,7 @@ void SoftmaxEvaluator::softmax_scaled(PhantomCiphertext &x, PhantomCiphertext &r
         ckks->evaluator.mod_switch_to_inplace(exp_x, res.params_id());
         ckks->evaluator.multiply(res, exp_x, res);
         ckks->evaluator.relinearize_inplace(res, *ckks->relin_keys);
-        ckks->evaluator.rescale_to_next_inplace(res);
+        ckks->evaluator.rescale_to_next_inplace(res); // 1 个 level
 
         timer.stop();
     }

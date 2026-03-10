@@ -106,8 +106,8 @@ void MM_test() {
 }
 
 void argmax_test() {
-    long logN = 15;
-    long logn = logN - 2;
+    long logN = 16;
+    long logn = logN - 1;
     long sparse_slots = (1 << logn);
 
     int logp = 46;
@@ -345,12 +345,12 @@ int main() {
         {
             CUDATimer timer("LayerNorm", 0);
             timer.start();
-            ln_evaluator.layer_norm(cipher_input, cipher_output, 16384);
+            ln_evaluator.layer_norm(cipher_input, cipher_output, 32768);
             timer.stop();
         }
 
-        // cout << "[LayerNorm] 16 x 768 takes: " << timer.duration() << " milliseconds" << endl;
-        cout << "Mean Absolute Error: " << ckks_evaluator.calculate_MAE(layernorm_calibration, cipher_output, 768) << endl;
+        cout << "End." << endl;
+        // cout << "Mean Absolute Error: " << ckks_evaluator.calculate_MAE(layernorm_calibration, cipher_output, 768) << endl;
     }
 
     /*

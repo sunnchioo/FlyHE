@@ -4,13 +4,13 @@
 
 namespace conver {
     void LWEsToRLWEKeyGen(
-        const PhantomContext &context,
-        LTPreKey &eval_key,
+        const PhantomContext& context,
+        LTPreKey& eval_key,
         double scale,
-        const PhantomSecretKey &phantom_key,
-        const TFHESecretKey &tfhepp_key,
+        const PhantomSecretKey& phantom_key,
+        const TFHESecretKey& tfhepp_key,
         size_t tfhe_n,
-        PhantomCKKSEncoder &encoder) {
+        PhantomCKKSEncoder& encoder) {
         size_t slot_count = encoder.slot_count();
 
         std::vector<double> slots(tfhe_n, 0.);
@@ -47,13 +47,13 @@ namespace conver {
     }
 
     void LinearTransform(
-        const PhantomContext &context,
-        PhantomCiphertext &result,
-        std::vector<std::vector<double>> &matrix,
+        const PhantomContext& context,
+        PhantomCiphertext& result,
+        std::vector<std::vector<double>>& matrix,
         double scale,
-        LTPreKey &eval_key,
-        PhantomCKKSEncoder &encoder,
-        PhantomGaloisKey &galois_keys) {
+        LTPreKey& eval_key,
+        PhantomCKKSEncoder& encoder,
+        PhantomGaloisKey& galois_keys) {
         size_t rows = matrix.size();
         size_t columns = matrix.front().size();
         size_t slot_counts = encoder.slot_count();
@@ -120,12 +120,12 @@ namespace conver {
     }
 
     void HomMod(
-        const PhantomContext &context,
-        PhantomCiphertext &cipher,
+        const PhantomContext& context,
+        PhantomCiphertext& cipher,
         double scale,
         double q0,
-        PhantomCKKSEncoder &encoder,
-        PhantomRelinKey &relin_keys) {
+        PhantomCKKSEncoder& encoder,
+        PhantomRelinKey& relin_keys) {
         uint32_t r = 2;
         // Generate ChebyshevPoly
         ChebyshevPoly poly;
@@ -137,8 +137,8 @@ namespace conver {
         //     throw std::invalid_argument("HomMod: level is small.");
         // }
 
-        auto &context_data = context.get_context_data(cipher.chain_index());
-        auto &parms = context_data.parms();
+        auto& context_data = context.get_context_data(cipher.chain_index());
+        auto& parms = context_data.parms();
 
         // printPhantomCiphertext(context, cipher);
         // std::cout << std::fixed << "cipher.scale : " << cipher.scale() << ", q0 :" << q0 << ", scale: " << scale << std::endl;
@@ -180,13 +180,13 @@ namespace conver {
     }
 
     void HomMod(
-        const PhantomContext &context,
-        PhantomCiphertext &cipher,
+        const PhantomContext& context,
+        PhantomCiphertext& cipher,
         double scale,
         double q0,
-        PhantomCKKSEncoder &encoder,
-        PhantomRelinKey &relin_keys,
-        PhantomSecretKey &secret_key) {
+        PhantomCKKSEncoder& encoder,
+        PhantomRelinKey& relin_keys,
+        PhantomSecretKey& secret_key) {
         uint32_t r = 2;
         // Generate ChebyshevPoly
         ChebyshevPoly poly;
@@ -198,8 +198,8 @@ namespace conver {
         //     throw std::invalid_argument("HomMod: level is small.");
         // }
 
-        auto &context_data = context.get_context_data(cipher.chain_index());
-        auto &parms = context_data.parms();
+        auto& context_data = context.get_context_data(cipher.chain_index());
+        auto& parms = context_data.parms();
 
         // printPhantomCiphertext(context, cipher);
         std::cout << std::fixed << "cipher.scale : " << cipher.scale() << ", q0 :" << q0 << ", scale: " << scale << std::endl;
@@ -276,18 +276,17 @@ namespace conver {
         }
     }
 
-    void LWEsToRLWE(const PhantomContext &context,
-                    PhantomCiphertext &result,
-                    std::vector<TLWELvl1> &lwe_ciphers,
-                    LTPreKey &eval_key,
+    void LWEsToRLWE(const PhantomContext& context,
+                    PhantomCiphertext& result,
+                    std::vector<TLWELvl1>& lwe_ciphers,
+                    LTPreKey& eval_key,
                     double scale,
                     double q0,
                     double rescale,
-                    PhantomCKKSEncoder &encoder,
-                    PhantomGaloisKey &galois_keys,
-                    PhantomRelinKey &relin_keys,
-                    PhantomSecretKey &secret_key) {
-
+                    PhantomCKKSEncoder& encoder,
+                    PhantomGaloisKey& galois_keys,
+                    PhantomRelinKey& relin_keys,
+                    PhantomSecretKey& secret_key) {
         // 1. Preprocess LWE Matrix
         size_t num_lwe_ciphers = lwe_ciphers.size();
         std::vector<std::vector<double>> A(num_lwe_ciphers);
@@ -396,16 +395,16 @@ namespace conver {
     }
 
     void LWEsToRLWE(
-        const PhantomContext &context,
-        PhantomCiphertext &result,
-        std::vector<TLWELvl1> &lwe_ciphers,
-        LTPreKey &eval_key,
+        const PhantomContext& context,
+        PhantomCiphertext& result,
+        std::vector<TLWELvl1>& lwe_ciphers,
+        LTPreKey& eval_key,
         double scale,
         double q0,
         double rescale,
-        PhantomCKKSEncoder &encoder,
-        PhantomGaloisKey &galois_keys,
-        PhantomRelinKey &relin_keys) {
+        PhantomCKKSEncoder& encoder,
+        PhantomGaloisKey& galois_keys,
+        PhantomRelinKey& relin_keys) {
         // 1. Preprocess LWE Matrix
         size_t num_lwe_ciphers = lwe_ciphers.size();
         std::vector<std::vector<double>> A(num_lwe_ciphers);
@@ -431,7 +430,7 @@ namespace conver {
         // 2. Linear Transform A * s
         // std::cout << "Linear Transform A * s" << std::endl;
         LinearTransform(context, result, A, 1.0, eval_key, encoder, galois_keys);
-        rescale_to_next_inplace(context, result); // 1 level
+        rescale_to_next_inplace(context, result);  // 1 level
         result.scale() = 1.0;
 
         // 3. Perform A * s + b
@@ -448,14 +447,14 @@ namespace conver {
     }
 
     void HomRound(
-        const PhantomContext &context,
-        PhantomCiphertext &cipher,
+        const PhantomContext& context,
+        PhantomCiphertext& cipher,
         double scale,
-        PhantomCKKSEncoder &encoder,
-        PhantomRelinKey &relin_keys) {
-        auto &context_data = context.get_context_data(cipher.chain_index());
-        auto &parms = context_data.parms();
-        auto &coeff_modulus = parms.coeff_modulus();
+        PhantomCKKSEncoder& encoder,
+        PhantomRelinKey& relin_keys) {
+        auto& context_data = context.get_context_data(cipher.chain_index());
+        auto& parms = context_data.parms();
+        auto& coeff_modulus = parms.coeff_modulus();
         // x = 2 * x - 1
         multiply_scalar(context, cipher, 2.0, 1.0, encoder);
         add_scalar(context, cipher, -1.0, encoder);

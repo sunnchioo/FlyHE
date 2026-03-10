@@ -14,8 +14,14 @@ target_link_libraries(bootstrapping PRIVATE ntl gmp m pthread)
 add_executable(bootstrapping_alpha6 bootstrapping_alpha6.cu)
 target_link_libraries(bootstrapping_alpha6 PRIVATE ntl gmp m pthread)
 
+add_executable(bootstrapping_slim_alpha6 bootstrapping_slim_alpha6.cu)
+target_link_libraries(bootstrapping_slim_alpha6 PRIVATE ntl gmp m pthread)
+
 add_executable(test_s2c test_s2c.cu)
 target_link_libraries(test_s2c PRIVATE ntl gmp m pthread)
+
+add_executable(test_mv test_mv.cu)
+target_link_libraries(test_mv PRIVATE ntl gmp m pthread)
 
 # add_executable(mvm mvm.cu)
 # target_link_libraries(mvm PRIVATE ntl gmp m pthread)

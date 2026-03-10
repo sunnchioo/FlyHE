@@ -14,3 +14,5 @@ link_libraries(cutfhepp)
 add_executable(cupbs cupbs.cu)
 target_link_libraries(cupbs PRIVATE ntl gmp m pthread)
 
+add_executable(cuadd cuadd.cu)
+target_link_libraries(cuadd PRIVATE ntl gmp m pthread)

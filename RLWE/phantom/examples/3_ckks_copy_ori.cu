@@ -176,31 +176,95 @@ void example_ckks_add(PhantomContext& context, const double& scale) {
     secret_key.encrypt_symmetric(context, x_plain, x_sym_cipher);
     secret_key.encrypt_symmetric(context, y_plain, y_sym_cipher);
 
-    size_t modulus = x_sym_cipher.coeff_modulus_size();
-    cout << "Max modulus: " << modulus << endl;
+    cout << "Homomorphic adding ......" << endl;
+    add_inplace(context, x_sym_cipher, y_sym_cipher);
 
-    cout << "Homomorphic adding time......" << endl;
-    PhantomCiphertext add0, add1, add_tmp;
-    add0 = x_sym_cipher;
-    add1 = y_sym_cipher;
-    for (size_t i = 0; i < modulus; i++) {
-        {
-            ChronoTimer timer("");
-            timer.start();
-            add(context, add0, add1, add_tmp);
-            timer.stop();
-        }
-        mod_switch_to_next_inplace(context, add0);
-        mod_switch_to_next_inplace(context, add1);
+    PhantomPlaintext x_plus_y_sym_plain;
+    cout << "Decrypting ......" << endl;
+
+    secret_key.decrypt(context, x_sym_cipher, x_plus_y_sym_plain);
+
+    encoder.decode(context, x_plus_y_sym_plain, result);
+    cout << "Decode the decrypted plaintext." << endl;
+    print_vector(result, 3, 7);
+    bool correctness = true;
+    for (size_t i = 0; i < max(msg_size1, msg_size2); i++) {
+        if (i >= msg_size1)
+            correctness &= result[i] == input2[i];
+        else if (i >= msg_size2)
+            correctness &= result[i] == input1[i];
+        else
+            correctness &= result[i] == cuCadd(input1[i], input2[i]);
     }
+    if (!correctness)
+        throw std::logic_error("Symmetric HomAdd error");
+    result.clear();
 
-    // cout << "Homomorphic subtracting ......" << endl;
-    // sub_inplace(context, x_sym_cipher, y_sym_cipher);
+    cout << "Homomorphic subtracting ......" << endl;
+    sub_inplace(context, x_sym_cipher, y_sym_cipher);
 
-    cout << "Homomorphic add many time......" << endl;
+    PhantomPlaintext x_minus_y_sym_plain;
+    cout << "Decrypting ......" << endl;
+    secret_key.decrypt(context, x_sym_cipher, x_minus_y_sym_plain);
+    encoder.decode(context, x_minus_y_sym_plain, result);
+    cout << "Decode the decrypted plaintext." << endl;
+    print_vector(result, 3, 7);
+    correctness = true;
+    for (size_t i = 0; i < max(msg_size1, msg_size2); i++) {
+        correctness &= result[i] == input1[i];
+    }
+    if (!correctness)
+        throw std::logic_error("Symmetric HomSub error");
+    result.clear();
+
+    PhantomCiphertext x_asym_cipher, y_asym_cipher;
+    cout << "CKKS asymmetric HomAdd/Sub test begin, encrypting ......" << endl;
+    public_key.encrypt_asymmetric(context, x_plain, x_asym_cipher);
+    public_key.encrypt_asymmetric(context, y_plain, y_asym_cipher);
+
+    cout << "Homomorphic adding ......" << endl;
+    add_inplace(context, y_asym_cipher, x_asym_cipher);
+
+    PhantomPlaintext x_plus_y_asym_plain;
+    cout << "Decrypting ......" << endl;
+    secret_key.decrypt(context, y_asym_cipher, x_plus_y_asym_plain);
+    encoder.decode(context, x_plus_y_asym_plain, result);
+    cout << "Decode the decrypted plaintext." << endl;
+    print_vector(result, 3, 7);
+    correctness = true;
+    for (size_t i = 0; i < max(msg_size1, msg_size2); i++) {
+        if (i >= msg_size1)
+            correctness &= result[i] == input2[i];
+        else if (i >= msg_size2)
+            correctness &= result[i] == input1[i];
+        else
+            correctness &= result[i] == cuCadd(input1[i], input2[i]);
+    }
+    if (!correctness)
+        throw std::logic_error("Asymmetric HomAdd error");
+    result.clear();
+
+    cout << "Homomorphic subtracting ......" << endl;
+    sub_inplace(context, x_asym_cipher, y_asym_cipher, true);
+
+    PhantomPlaintext x_minus_y_asym_plain;
+    cout << "Decrypting ......" << endl;
+    secret_key.decrypt(context, x_asym_cipher, x_minus_y_asym_plain);
+    encoder.decode(context, x_minus_y_asym_plain, result);
+    cout << "Decode the decrypted plaintext." << endl;
+    print_vector(result, 3, 7);
+    correctness = true;
+    for (size_t i = 0; i < max(msg_size1, msg_size2); i++) {
+        correctness &= result[i] == input2[i];
+    }
+    if (!correctness)
+        throw std::logic_error("Asymmetric HomSub error");
+    result.clear();
+
+    cout << "Homomorphic add many ......" << endl;
     vector<vector<cuDoubleComplex>> input;
     vector<PhantomCiphertext> ciphers;
-    uint64_t input_vector_size = 5;
+    uint64_t input_vector_size = 20;
     input.resize(input_vector_size);
     ciphers.reserve(input_vector_size);
     for (size_t i = 0; i < input_vector_size; i++) {
@@ -225,13 +289,8 @@ void example_ckks_add(PhantomContext& context, const double& scale) {
         ciphers.push_back(asym_cipher);
     }
 
-    PhantomCiphertext sum_cipher(context);
-    {
-        ChronoTimer timer("");
-        timer.start();
-        add_many(context, ciphers, sum_cipher);
-        timer.stop();
-    }
+    // PhantomCiphertext sum_cipher(context);
+    // add_many(context, ciphers, sum_cipher);
     //
     // PhantomPlaintext sum_plain(context);
     // cout << "Decrypting ......" << endl;
@@ -311,91 +370,78 @@ void example_ckks_mul_plain(PhantomContext& context, const double& scale) {
 
     PhantomCiphertext sym_cipher;
     secret_key.encrypt_symmetric(context, plain, sym_cipher);
+    multiply_plain_inplace(context, sym_cipher, const_plain);
 
-    size_t modulus = sym_cipher.coeff_modulus_size();
-    cout << "Max modulus: " << modulus << endl;
+    secret_key.decrypt(context, sym_cipher, plain);
+    encoder.decode(context, plain, result);
+    cout << "Result vector: " << endl;
+    print_vector(result, 3, 7);
 
-    for (size_t i = 0; i < modulus; i++) {
-        {
-            ChronoTimer timer("");
-            timer.start();
-            multiply_plain_inplace(context, sym_cipher, const_plain);
-            timer.stop();
+    bool correctness = true;
+    for (size_t i = 0; i < msg_size; i++) {
+        correctness &= result[i] == cuCmul(msg_vec[i], const_vec[i]);
+        if (!correctness) {
+            cout << result[i].x << " + I * " << result[i].y << endl;
+            cout << cuCmul(msg_vec[i], const_vec[i]).x << " + I * " << cuCmul(msg_vec[i], const_vec[i]).y << endl;
         }
-        mod_switch_to_next_inplace(context, sym_cipher);
-        mod_switch_to_next_inplace(context, const_plain);
     }
+    if (!correctness)
+        throw std::logic_error("Symmetric cipher multiply plain vector error");
+    result.clear();
+    msg_vec.clear();
+    const_vec.clear();
 
-    // secret_key.decrypt(context, sym_cipher, plain);
-    // encoder.decode(context, plain, result);
-    // cout << "Result vector: " << endl;
-    // print_vector(result, 3, 7);
+    cout << "------------- Asymmetric case ---------------" << endl;
+    msg_size >>= 2;
+    msg_vec.reserve(msg_size);
+    for (size_t i = 0; i < msg_size; i++) {
+        rand_real = (double)rand() / RAND_MAX;
+        rand_imag = (double)rand() / RAND_MAX;
+        msg_vec.push_back(make_cuDoubleComplex(rand_real, rand_imag));
+    }
+    cout << "Message vector: " << endl;
+    print_vector(msg_vec, 3, 7);
 
-    // bool correctness = true;
-    // for (size_t i = 0; i < msg_size; i++) {
-    //     correctness &= result[i] == cuCmul(msg_vec[i], const_vec[i]);
-    //     if (!correctness) {
-    //         cout << result[i].x << " + I * " << result[i].y << endl;
-    //         cout << cuCmul(msg_vec[i], const_vec[i]).x << " + I * " << cuCmul(msg_vec[i], const_vec[i]).y << endl;
-    //     }
-    // }
-    // if (!correctness)
-    //     throw std::logic_error("Symmetric cipher multiply plain vector error");
-    // result.clear();
-    // msg_vec.clear();
-    // const_vec.clear();
+    const_vec.reserve(128);
+    // This time, the length of const_vec is less than msg_vec,
+    // however, CKKS encoder will automatically zero-padding const_vec
+    // to the same length with msg_vec
+    for (size_t i = 0; i < 128; i++) {
+        if (i == 2) {
+            rand_real = (double)rand() / RAND_MAX;
+            rand_imag = (double)rand() / RAND_MAX;
+            const_vec.push_back(make_cuDoubleComplex(rand_real, rand_imag));
+        } else
+            const_vec.push_back(make_cuDoubleComplex(0.0, 0.0));
+    }
+    cout << "Constant vector: " << endl;
+    print_vector(const_vec, 3, 7);
 
-    // cout << "------------- Asymmetric case ---------------" << endl;
-    // msg_size >>= 2;
-    // msg_vec.reserve(msg_size);
-    // for (size_t i = 0; i < msg_size; i++) {
-    //     rand_real = (double)rand() / RAND_MAX;
-    //     rand_imag = (double)rand() / RAND_MAX;
-    //     msg_vec.push_back(make_cuDoubleComplex(rand_real, rand_imag));
-    // }
-    // cout << "Message vector: " << endl;
-    // print_vector(msg_vec, 3, 7);
+    // reset the length of encoder
+    encoder.encode(context, msg_vec, scale, plain);
+    encoder.encode(context, const_vec, scale, const_plain);
 
-    // const_vec.reserve(128);
-    // // This time, the length of const_vec is less than msg_vec,
-    // // however, CKKS encoder will automatically zero-padding const_vec
-    // // to the same length with msg_vec
-    // for (size_t i = 0; i < 128; i++) {
-    //     if (i == 2) {
-    //         rand_real = (double)rand() / RAND_MAX;
-    //         rand_imag = (double)rand() / RAND_MAX;
-    //         const_vec.push_back(make_cuDoubleComplex(rand_real, rand_imag));
-    //     } else
-    //         const_vec.push_back(make_cuDoubleComplex(0.0, 0.0));
-    // }
-    // cout << "Constant vector: " << endl;
-    // print_vector(const_vec, 3, 7);
+    PhantomCiphertext asym_cipher;
+    public_key.encrypt_asymmetric(context, plain, asym_cipher);
+    multiply_plain_inplace(context, asym_cipher, const_plain);
 
-    // // reset the length of encoder
-    // encoder.encode(context, msg_vec, scale, plain);
-    // encoder.encode(context, const_vec, scale, const_plain);
+    secret_key.decrypt(context, asym_cipher, plain);
+    encoder.decode(context, plain, result);
+    cout << "Result vector: " << endl;
+    print_vector(result, 3, 7);
 
-    // PhantomCiphertext asym_cipher;
-    // public_key.encrypt_asymmetric(context, plain, asym_cipher);
-    // multiply_plain_inplace(context, asym_cipher, const_plain);
-
-    // secret_key.decrypt(context, asym_cipher, plain);
-    // encoder.decode(context, plain, result);
-    // cout << "Result vector: " << endl;
-    // print_vector(result, 3, 7);
-
-    // correctness = true;
-    // for (size_t i = 0; i < msg_size; i++) {
-    //     if (i == 2)
-    //         correctness &= result[i] == cuCmul(msg_vec[i], const_vec[i]);
-    //     else
-    //         correctness &= result[i] == make_cuDoubleComplex(0.0, 0.0);
-    // }
-    // if (!correctness)
-    //     throw std::logic_error("Asymmetric cipher multiply plain vector error");
-    // result.clear();
-    // msg_vec.clear();
-    // const_vec.clear();
+    correctness = true;
+    for (size_t i = 0; i < msg_size; i++) {
+        if (i == 2)
+            correctness &= result[i] == cuCmul(msg_vec[i], const_vec[i]);
+        else
+            correctness &= result[i] == make_cuDoubleComplex(0.0, 0.0);
+    }
+    if (!correctness)
+        throw std::logic_error("Asymmetric cipher multiply plain vector error");
+    result.clear();
+    msg_vec.clear();
+    const_vec.clear();
 }
 
 void example_ckks_mul(PhantomContext& context, const double& scale) {
@@ -418,10 +464,10 @@ void example_ckks_mul(PhantomContext& context, const double& scale) {
     size_t y_size = slot_count;
     x_msg.reserve(x_size);
     for (size_t i = 0; i < x_size; i++) {
-        // rand_real = (double)rand() / RAND_MAX;
-        // rand_imag = (double)rand() / RAND_MAX;
-        rand_real = 0.5;
-        rand_imag = 0.5;
+        rand_real = (double)rand() / RAND_MAX;
+        rand_imag = (double)rand() / RAND_MAX;
+        // rand_real = 0.5;
+        // rand_imag = 0.5;
         x_msg.push_back(make_cuDoubleComplex(rand_real, rand_imag));
     }
     cout << "Message vector: " << endl;
@@ -429,10 +475,10 @@ void example_ckks_mul(PhantomContext& context, const double& scale) {
 
     y_msg.reserve(y_size);
     for (size_t i = 0; i < y_size; i++) {
-        // rand_real = (double)rand() / RAND_MAX;
-        // rand_imag = (double)rand() / RAND_MAX;
-        rand_real = 0.5;
-        rand_imag = 0.5;
+        rand_real = (double)rand() / RAND_MAX;
+        rand_imag = (double)rand() / RAND_MAX;
+        // rand_real = 0.5;
+        // rand_imag = 0.5;
         y_msg.push_back(make_cuDoubleComplex(rand_real, rand_imag));
     }
     cout << "Message vector: " << endl;
@@ -457,49 +503,161 @@ void example_ckks_mul(PhantomContext& context, const double& scale) {
     cout << x_cipher.chain_index() << endl;
     cout << context.last_context_data().chain_index() << endl;
 
-    PhantomCiphertext xy_cipher;
+    PhantomCiphertext xy_cipher = multiply(context, x_cipher, y_cipher);
+    relinearize_inplace(context, xy_cipher, relin_keys);
+    rescale_to_next_inplace(context, xy_cipher);
+    cout << "    + Scale of x*y after rescale: " << xy_cipher.scale() << " bits" << endl;
+    xy_cipher.set_scale(scale);
+    mod_switch_to_next_inplace(context, x_cipher);
 
-    size_t modulus = x_cipher.coeff_modulus_size();
-    cout << "Max modulus: " << modulus << endl;
+    cout << xy_cipher.chain_index() << endl;
 
-    for (size_t i = 0; i < modulus; i++) {
-        ChronoTimer timer("");
-        timer.start();
-        xy_cipher = multiply(context, x_cipher, y_cipher);
-        relinearize_inplace(context, xy_cipher, relin_keys);
-        timer.stop();
+    cout << "    + Scale of x: " << x_cipher.scale() << " bits" << endl;
+    PhantomCiphertext x2y_cipher = multiply(context, xy_cipher, x_cipher);
+    relinearize_inplace(context, x2y_cipher, relin_keys);
+    rescale_to_next_inplace(context, x2y_cipher);
+    cout << "    + Scale of x2y_cipher: " << x2y_cipher.scale() << " bits" << endl;
 
-        mod_switch_to_next_inplace(context, x_cipher);
-        mod_switch_to_next_inplace(context, y_cipher);
-        // rescale_to_next_inplace(context, xy_cipher);
+    PhantomPlaintext x2y_plain = secret_key.decrypt(context, x2y_cipher);
+    auto result = encoder.decode<cuDoubleComplex>(context, x2y_plain);
+    cout << "Result vector: " << endl;
+    print_vector(result, 3, 7);
+
+    bool correctness = true;
+    for (size_t i = 0; i < x_size; i++) {
+        correctness &= result[i] == cuCmul(x_msg[i], cuCmul(x_msg[i], y_msg[i]));
+    }
+    if (!correctness)
+        throw std::logic_error("Homomorphic multiplication error");
+    result.clear();
+    x_msg.clear();
+    y_msg.clear();
+}
+
+void test_ckks_continuous_mul_error(PhantomContext& context, const double& scale) {
+    std::cout << "Starting CKKS Continuous Multiplication Test (Depth = 20)..." << std::endl;
+
+    // --- KeyGen ---
+    PhantomSecretKey secret_key(context);
+    PhantomPublicKey public_key = secret_key.gen_publickey(context);
+    PhantomRelinKey relin_keys = secret_key.gen_relinkey(context);
+    PhantomCKKSEncoder encoder(context);
+
+    size_t slot_count = encoder.slot_count();
+    int iterations = 20;
+
+    // --- Step 1: 初始化累积器 (Accumulator) ---
+    // 我们先生成第 0 个密文作为起点
+    std::vector<cuDoubleComplex> accum_msg;
+    accum_msg.reserve(slot_count);
+    for (size_t i = 0; i < slot_count; i++) {
+        // 初始值建议接近 1.0，防止 20 次乘法后数值爆炸或消失
+        // 这里使用 0.9 ~ 1.1 之间的随机数
+        double r = 0.9 + ((double)rand() / RAND_MAX) * 0.2;
+        accum_msg.push_back(make_cuDoubleComplex(r, 0.0));
     }
 
-    // cout << "    + Scale of x*y after rescale: " << xy_cipher.scale() << " bits" << endl;
-    // xy_cipher.set_scale(scale);
-    // mod_switch_to_next_inplace(context, x_cipher);
+    PhantomPlaintext accum_plain;
+    encoder.encode(context, accum_msg, scale, accum_plain);
 
-    // cout << xy_cipher.chain_index() << endl;
+    PhantomCiphertext accum_cipher;
+    public_key.encrypt_asymmetric(context, accum_plain, accum_cipher);
 
-    // cout << "    + Scale of x: " << x_cipher.scale() << " bits" << endl;
-    // PhantomCiphertext x2y_cipher = multiply(context, xy_cipher, x_cipher);
-    // relinearize_inplace(context, x2y_cipher, relin_keys);
-    // rescale_to_next_inplace(context, x2y_cipher);
-    // cout << "    + Scale of x2y_cipher: " << x2y_cipher.scale() << " bits" << endl;
+    // 用于验证的明文累积器
+    std::vector<cuDoubleComplex> expected_msg = accum_msg;
 
-    // PhantomPlaintext x2y_plain = secret_key.decrypt(context, x2y_cipher);
-    // auto result = encoder.decode<cuDoubleComplex>(context, x2y_plain);
-    // cout << "Result vector: " << endl;
-    // print_vector(result, 3, 7);
+    // --- Step 2: 连续乘法循环 ---
+    for (int iter = 0; iter < iterations; ++iter) {
+        std::cout << "Iteration " << iter + 1 << "/" << iterations << " ... ";
 
-    // bool correctness = true;
-    // for (size_t i = 0; i < x_size; i++) {
-    //     correctness &= result[i] == cuCmul(x_msg[i], cuCmul(x_msg[i], y_msg[i]));
-    // }
-    // if (!correctness)
-    //     throw std::logic_error("Homomorphic multiplication error");
-    // result.clear();
-    // x_msg.clear();
-    // y_msg.clear();
+        // A. 生成新的随机乘数 (Operand)
+        std::vector<cuDoubleComplex> operand_msg;
+        operand_msg.reserve(slot_count);
+        for (size_t i = 0; i < slot_count; i++) {
+            // 同样保持在 1.0 附近以保证数值稳定性
+            double r = 0.9 + ((double)rand() / RAND_MAX) * 0.2;
+            operand_msg.push_back(make_cuDoubleComplex(r, 0.0));
+        }
+
+        // B. 更新预期明文结果 (Expected Plaintext)
+        for (size_t i = 0; i < slot_count; i++) {
+            expected_msg[i] = cuCmul(expected_msg[i], operand_msg[i]);
+        }
+
+        // C. 加密新的乘数
+        PhantomPlaintext operand_plain;
+        encoder.encode(context, operand_msg, scale, operand_plain);
+        PhantomCiphertext operand_cipher;
+        public_key.encrypt_asymmetric(context, operand_plain, operand_cipher);
+
+        // D. [关键步骤] 层级对齐 (Modulus Switching)
+        // accum_cipher 已经经历过 iter 次 Rescale，位于较低层级
+        // operand_cipher 是新加密的，位于最高层级
+        // 我们必须把 operand_cipher 降级到和 accum_cipher 一样
+        // 假设每次循环 accum 下降 1 层，我们需要让 operand 下降 iter + 1 层?
+        // 不，通常是匹配 accum 当前的 chain_index。
+
+        // 注意：这里假设你的库提供了类似 chain_index() 的比较或直接降级的方法
+        // 下面是一个通用的逻辑：只要 operand 比 accum "高"，就降级
+        // 如果 Phantom 库的 chain_index 是越小越深，逻辑如下；如果是 ID 需要查表。
+        // 既然之前的代码用了 mod_switch_to_next，我们手动执行 iter 次降级（因为 accum 降了 iter 次）
+
+        // for(int k = 0; k < accum_cipher.chain_index_depth(); ++k) {
+        // 这里的条件需要根据库的具体实现调整。
+        // 如果库没有自动对齐功能，通常做法是：
+        // "New Ciphertext" 需要 mod switch 到 "Accumulator" 的 level
+        // }
+
+        // 简单暴力法：由于我们知道 accum 在第 iter 次循环前已经 Rescale 了 iter 次 (除了第0次)
+        // 实际上 accum 初始是 Level Max.
+        // Loop 0: accum (Max), operand (Max). Mul -> Relin -> Rescale. Accum becomes (Max-1).
+        // Loop 1: accum (Max-1). operand (Max). MUST ModSwitch operand to (Max-1).
+
+        for (int k = 0; k < iter; ++k) {
+            // 模拟将 operand 降级到当前 accum 的层级
+            mod_switch_to_next_inplace(context, operand_cipher);
+        }
+        // 此时 operand_cipher 和 accum_cipher 应该在同一层级
+
+        // E. 乘法运算
+        accum_cipher = multiply(context, accum_cipher, operand_cipher);
+        relinearize_inplace(context, accum_cipher, relin_keys);
+        rescale_to_next_inplace(context, accum_cipher);
+
+        // 可选：重置 Scale (防止 Scale 漂移)
+        accum_cipher.set_scale(scale);
+
+        std::cout << "Done. (Current Scale: " << accum_cipher.scale() << ")" << std::endl;
+    }
+
+    // --- Step 3: 解密与验证 ---
+    PhantomPlaintext result_plain = secret_key.decrypt(context, accum_cipher);
+    auto result_vec = encoder.decode<cuDoubleComplex>(context, result_plain);
+
+    // --- Step 4: 计算最终误差 ---
+    double max_error = 0.0;
+    for (size_t i = 0; i < slot_count; i++) {
+        // 计算复数距离
+        double diff_real = result_vec[i].x - expected_msg[i].x;
+        double diff_imag = result_vec[i].y - expected_msg[i].y;
+        double err = std::sqrt(diff_real * diff_real + diff_imag * diff_imag);
+
+        if (err > max_error) {
+            max_error = err;
+        }
+    }
+
+    std::cout << "------------------------------------------------" << std::endl;
+    std::cout << "Continuous Multiplication Test (20 hops) Finished." << std::endl;
+    std::cout << "Final Max Error (L-inf norm): " << max_error << std::endl;
+
+    // 精度警告
+    if (max_error > 0.1) {
+        std::cout << "WARNING: High error detected! Possible causes:" << std::endl;
+        std::cout << "1. Parameters do not support depth 20." << std::endl;
+        std::cout << "2. Scale drift (precision loss)." << std::endl;
+    }
+    std::cout << "------------------------------------------------" << std::endl;
 }
 
 void example_ckks_rotation(PhantomContext& context, const double& scale) {
@@ -535,74 +693,61 @@ void example_ckks_rotation(PhantomContext& context, const double& scale) {
 
     encoder.encode(context, x_msg, scale, x_plain);
 
-    PhantomCiphertext x_cipher, x_tmp;
+    PhantomCiphertext x_cipher;
 
     public_key.encrypt_asymmetric(context, x_plain, x_cipher);
 
     cout << "Compute, rot vector x." << endl;
+    rotate_inplace(context, x_cipher, step, galois_keys);
 
-    size_t modulus = x_cipher.coeff_modulus_size();
-    cout << "Max modulus: " << modulus << endl;
+    secret_key.decrypt(context, x_cipher, x_rot_plain);
 
-    for (size_t i = 0; i < modulus; i++) {
-        {
-            x_tmp = x_cipher;
-            ChronoTimer timer("");
-            timer.start();
-            rotate_inplace(context, x_tmp, step, galois_keys);
-            timer.stop();
-            mod_switch_to_inplace(context, x_cipher);
-        }
+    encoder.decode(context, x_rot_plain, result);
+    cout << "Result vector: " << endl;
+    print_vector(result, 3, 7);
+
+    bool correctness = true;
+    for (size_t i = 0; i < x_size; i++) {
+        correctness &= result[i] == x_msg[(i + step) % x_size];
     }
+    if (!correctness)
+        throw std::logic_error("Homomorphic rotation error");
+    result.clear();
+    x_msg.clear();
 
-    // secret_key.decrypt(context, x_cipher, x_rot_plain);
+    std::cout << "Example: CKKS HomConj test" << std::endl;
 
-    // encoder.decode(context, x_rot_plain, result);
-    // cout << "Result vector: " << endl;
-    // print_vector(result, 3, 7);
+    x_msg.reserve(x_size);
+    for (size_t i = 0; i < x_size; i++) {
+        rand_real = (double)rand() / RAND_MAX;
+        rand_imag = (double)rand() / RAND_MAX;
+        x_msg.push_back(make_cuDoubleComplex(rand_real, rand_imag));
+    }
+    cout << "Message vector: " << endl;
+    print_vector(x_msg, 3, 7);
 
-    // bool correctness = true;
-    // for (size_t i = 0; i < x_size; i++) {
-    //     correctness &= result[i] == x_msg[(i + step) % x_size];
-    // }
-    // if (!correctness)
-    //     throw std::logic_error("Homomorphic rotation error");
-    // result.clear();
-    // x_msg.clear();
+    PhantomPlaintext x_conj_plain;
 
-    // std::cout << "Example: CKKS HomConj test" << std::endl;
+    encoder.encode(context, x_msg, scale, x_plain);
+    public_key.encrypt_asymmetric(context, x_plain, x_cipher);
 
-    // x_msg.reserve(x_size);
-    // for (size_t i = 0; i < x_size; i++) {
-    //     rand_real = (double)rand() / RAND_MAX;
-    //     rand_imag = (double)rand() / RAND_MAX;
-    //     x_msg.push_back(make_cuDoubleComplex(rand_real, rand_imag));
-    // }
-    // cout << "Message vector: " << endl;
-    // print_vector(x_msg, 3, 7);
+    cout << "Compute, conjugate vector x." << endl;
+    rotate_inplace(context, x_cipher, 0, galois_keys);
 
-    // PhantomPlaintext x_conj_plain;
+    secret_key.decrypt(context, x_cipher, x_conj_plain);
 
-    // encoder.encode(context, x_msg, scale, x_plain);
-    // public_key.encrypt_asymmetric(context, x_plain, x_cipher);
+    encoder.decode(context, x_conj_plain, result);
+    cout << "Result vector: " << endl;
+    print_vector(result, 3, 7);
 
-    // cout << "Compute, conjugate vector x." << endl;
-    // rotate_inplace(context, x_cipher, 0, galois_keys);
-
-    // secret_key.decrypt(context, x_cipher, x_conj_plain);
-
-    // encoder.decode(context, x_conj_plain, result);
-    // cout << "Result vector: " << endl;
-    // print_vector(result, 3, 7);
-
-    // correctness = true;
-    // for (size_t i = 0; i < x_size; i++) {
-    //     correctness &= result[i] == make_cuDoubleComplex(x_msg[i].x, -x_msg[i].y);
-    // }
-    // if (!correctness)
-    //     throw std::logic_error("Homomorphic conjugate error");
-    // result.clear();
-    // x_msg.clear();
+    correctness = true;
+    for (size_t i = 0; i < x_size; i++) {
+        correctness &= result[i] == make_cuDoubleComplex(x_msg[i].x, -x_msg[i].y);
+    }
+    if (!correctness)
+        throw std::logic_error("Homomorphic conjugate error");
+    result.clear();
+    x_msg.clear();
 }
 
 void example_ckks_small_param() {
@@ -806,13 +951,14 @@ void examples_ckks() {
         EncryptionParameters parms(scheme_type::ckks);
 
         size_t poly_modulus_degree = 1 << 15;
-        double scale = pow(2.0, 40);
+        double scale = pow(2.0, 56);
         switch (alpha) {
         case 1:
             parms.set_poly_modulus_degree(poly_modulus_degree);
             parms.set_coeff_modulus(
-                CoeffModulus::Create(poly_modulus_degree, {60, 40, 40, 40, 40, 40, 40, 40, 40, 40,
-                                                           40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 60}));
+                CoeffModulus::Create(poly_modulus_degree, {61, 56, 56, 56, 56, 56, 56, 56, 56, 56,
+                                                           56, 56, 56, 56, 56, 56, 56, 56, 56, 56,
+                                                           56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 61}));
             break;
         case 2:
             parms.set_poly_modulus_degree(poly_modulus_degree);
@@ -861,10 +1007,11 @@ void examples_ckks() {
         cout << endl;
 
         // example_ckks_enc(context, scale);
-        example_ckks_add(context, scale);
-        example_ckks_mul_plain(context, scale);
-        example_ckks_mul(context, scale);
-        example_ckks_rotation(context, scale);
+        // example_ckks_add(context, scale);
+        // example_ckks_mul_plain(context, scale);
+        // example_ckks_mul(context, scale);
+        test_ckks_continuous_mul_error(context, scale);
+        // example_ckks_rotation(context, scale);
         // example_ckks_other(context, scale);
     }
 

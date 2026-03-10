@@ -217,13 +217,13 @@ void MinOfTwoBatch(tlwevaluator<P> &tlwer, Pointer<cuTLWE<P>> &dtlwe_min, Pointe
 
     auto &context = tlwer.get_pbscontext();
 
-    HalfBoostrapping<Lvl10, Lvl01>(context, dtlwe_tmp0, dtlwe_tmp0, step);  // 0.5(m0 + m1)
+    HalfBoostrapping<Lvl10, Lvl01>(context, dtlwe_tmp0, dtlwe_tmp0, step); // 0.5(m0 + m1)
     // tlwer.print_culwe_ct_value(res0, step, "half result");
 
-    HalfAbsBoostrapping<Lvl10, Lvl01>(context, dtlwe_tmp1, dtlwe_tmp1, step);  // 0.5|m0 - m1|
+    HalfAbsBoostrapping<Lvl10, Lvl01>(context, dtlwe_tmp1, dtlwe_tmp1, step); // 0.5|m0 - m1|
     // tlwer.print_culwe_ct_value(res1, step, "half abs result");
 
-    tlwer.sub(rtn, res0, res1, step);  // min(m0, m1)
+    tlwer.sub(rtn, res0, res1, step); // min(m0, m1)
     // tlwer.print_culwe_ct_value(rtn, step, "min result");
 }
 
@@ -238,7 +238,7 @@ void MiniIndex(tlwevaluator<P> &tlwer, std::vector<Pointer<cuTLWE<P>>> &lwe_dist
             if (idepth == 0) {
                 MinOfTwoBatch<Lvl1>(tlwer, dtlwe_min, lwe_distances[ipoints], centers / (1 << (idepth + 1)));
             } else {
-                MinOfTwoBatch<Lvl1>(tlwer, dtlwe_min, dtlwe_min, centers / (1 << (idepth + 1)));  // min in first
+                MinOfTwoBatch<Lvl1>(tlwer, dtlwe_min, dtlwe_min, centers / (1 << (idepth + 1))); // min in first
             }
         }
 
@@ -248,7 +248,7 @@ void MiniIndex(tlwevaluator<P> &tlwer, std::vector<Pointer<cuTLWE<P>>> &lwe_dist
         auto data1 = dtlwe_min->template get<Lvl1>();
 
         tlwer.sub_single(res, data0, data1, centers);
-        IndexBoostrapping<Lvl10, Lvl01>(tlwer.get_pbscontext(), lwe_distances[ipoints], lwe_distances[ipoints], centers);  // lwe bool
+        IndexBoostrapping<Lvl10, Lvl01>(tlwer.get_pbscontext(), lwe_distances[ipoints], lwe_distances[ipoints], centers); // lwe bool
 
         // sum the min index
         auto count = lwe_distances[points]->template get<Lvl1>();
@@ -277,7 +277,7 @@ void EuclideanDistanceMultiCenters(CKKSEvaluator &ckks, std::vector<PhantomCiphe
             }
 
             // mask
-            ckks.evaluator.multiply_vector_inplace_reduced_error(distance_temp, mask);  // get first sum
+            ckks.evaluator.multiply_vector_inplace_reduced_error(distance_temp, mask); // get first sum
             ckks.evaluator.rescale_to_next_inplace(distance_temp);
 
             // merge: same point to defferent center
@@ -302,7 +302,7 @@ void EuclideanDistanceMultiCenters(CKKSEvaluator &ckks, std::vector<PhantomCiphe
 int main() {
     // kmeans data
     size_t dim_max = 1 << 15;
-    std::vector<std::vector<double>> data = FileIO<double>::LoadCSV3D("/mnt/data2/home/syt/data/Libra/benchmark/app/data/kmeans/4data4cent.csv");  // (points, dim)
+    std::vector<std::vector<double>> data = FileIO<double>::LoadCSV3D("/mnt/data2/home/syt/data/Libra/benchmark/app/data/kmeans/4data4cent.csv"); // (points, dim)
     if (dim_max < data[0].size()) {
         throw std::logic_error("Error: Get Out Input Length.");
     }
@@ -380,15 +380,15 @@ int main() {
               KeySwitchingKeyLvl10, KeySwitchingKeyLvl20, KeySwitchingKeyLvl21>(sk, ek);
     tlwevaluator<lwe_enc_lvl> tlwe_evaluator(&sk, &ek, lwe_scale);
 
-    std::vector<std::vector<TLWELvl1>> lwe_distances(points + 1, std::vector<TLWELvl1>(centers));  // dis matrix
-    std::vector<Pointer<cuTLWE<Lvl1>>> d_lwe_distances;                                            // dis matrix
+    std::vector<std::vector<TLWELvl1>> lwe_distances(points + 1, std::vector<TLWELvl1>(centers)); // dis matrix
+    std::vector<Pointer<cuTLWE<Lvl1>>> d_lwe_distances;                                           // dis matrix
     d_lwe_distances.reserve(points + 1);
 
     // kmeans 5,867,507,342  1,572,540,046
     std::cout << "kmeans..." << endl;
     size_t slot_count = encoder.slot_count();
-    std::vector<std::vector<double>> input(points, std::vector<double>(slot_count, 0.0));    // input: 一个输入一个密文，维度为一个密文里
-    std::vector<std::vector<double>> center(centers, std::vector<double>(slot_count, 0.0));  // center: 一个 centers 一个密文
+    std::vector<std::vector<double>> input(points, std::vector<double>(slot_count, 0.0));   // input: 一个输入一个密文，维度为一个密文里
+    std::vector<std::vector<double>> center(centers, std::vector<double>(slot_count, 0.0)); // center: 一个 centers 一个密文
     for (size_t i = 0; i < points; i++) {
         std::copy(data[i].begin(), data[i].begin() + dim, input[i].begin());
     }
@@ -430,7 +430,7 @@ int main() {
         {
             CUDATimer timer("Euclidean distance", s);
             timer.start();
-            EuclideanDistanceMultiCenters(ckks_evaluator, points_cipher, center_cipher, points, dim, centers, distance_matrix_cipher);  // 2 level
+            EuclideanDistanceMultiCenters(ckks_evaluator, points_cipher, center_cipher, points, dim, centers, distance_matrix_cipher); // 2 level
             timer.stop();
             total_time += timer.get_mean_time();
         }
@@ -497,7 +497,7 @@ int main() {
         {
             CUDATimer timer("Repack", 0);
             timer.start();
-            conver::repack(results, h_lwes, rlwer, sk);  // 11 levels
+            conver::repack(results, h_lwes, rlwer, sk); // 11 levels
             timer.stop();
         }
         std::cout << "conversion level: " << results.coeff_modulus_size() << " chain: " << results.chain_index() << std::endl;
@@ -515,6 +515,6 @@ int main() {
             UpdateCenters(ckks_evaluator, center_cipher, points_cipher, centers, points, dim, centers_id_cipher, results);
             timer.stop();
             std::cout << "update level: " << center_cipher[0].coeff_modulus_size() << " chain: " << center_cipher[0].chain_index() << std::endl;
-        }
+        } // 4个level
     }
 }

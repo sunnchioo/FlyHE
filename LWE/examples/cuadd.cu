@@ -105,15 +105,7 @@ void SignBoostrapping(const Pointer<Context>& context, Pointer<cuTLWE<LvlX>>& re
     typename LvlZ::T* d_lut;
     CUDA_CHECK_RETURN(cudaMalloc(&d_lut, lut.size() * sizeof(typename LvlZ::T)));
     CUDA_CHECK_RETURN(cudaMemcpy(d_lut, lut.data(), lut.size() * sizeof(typename LvlZ::T), cudaMemcpyHostToDevice));
-
-    for (int iter = 0; iter < 20; iter++) {
-        {  // max
-            CUDATimer timer("XBoostrapping", 0);
-            timer.start();
-            ProgBootstrapping<LvlXY, LvlYZ>(context.get(), pbs_data, d_lut, d_res, d_tlwe, num_test);
-            timer.stop();
-        }
-    }
+    ProgBootstrapping<LvlXY, LvlYZ>(context.get(), pbs_data, d_lut, d_res, d_tlwe, num_test);
 }
 
 template <typename LvlXY, typename LvlYZ,
@@ -261,14 +253,13 @@ void random_real(std::vector<double>& vec, size_t size) {
 }
 
 int main(int argc, char* argv[]) {
-    // int batch = std::atoi(argv[1]);
-    int batch = 4;
+    int batch = std::atoi(argv[1]);
 
     std::cout << "Setting LWE Parameters..." << std::endl;
-    using lwe_enc_lvl = Lvl1;
-    using lwe_res_lvl = Lvl1;
-    // using lwe_enc_lvl = Lvl2;
-    // using lwe_res_lvl = Lvl2;
+    // using lwe_enc_lvl = Lvl1;
+    // using lwe_res_lvl = Lvl1;
+    using lwe_enc_lvl = Lvl2;
+    using lwe_res_lvl = Lvl2;
 
     // int scale_bits = std::numeric_limits<typename lwe_enc_lvl::T>::digits - lwe_enc_lvl::plain_modulus_bit - 1;
     // int scale_bits = 61;
@@ -284,16 +275,16 @@ int main(int argc, char* argv[]) {
     tlwevaluator<lwe_enc_lvl> tlwe_evaluator(&sk, &ek, lwe_scale);
 
     // std::vector<lwe_enc_lvl::T> msg = {0, 1, 2, 3, 4, 5, 6, 7};
-    std::vector<lwe_enc_lvl::T> msg = {4, 1, 2, 3};
+    // std::vector<lwe_enc_lvl::T> msg = {0, 1, 2, 3};
     // std::vector<lwe_enc_lvl::T> msg = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
-    // std::vector<lwe_enc_lvl::T> msg(batch, 0);
+    std::vector<lwe_enc_lvl::T> msg(batch, 0);
 
     std::vector<double> sparse(msg.size(), 0.0);
-    // random_real(sparse, msg.size());
+    random_real(sparse, msg.size());
     for (size_t i = 0; i < msg.size(); i++) {
-        sparse[i] = msg[i];
-        // msg[i] = sparse[i];
+        sparse[i] = std::round(sparse[i]);
+        msg[i] = sparse[i];
     }
 
     // std::vector<lwe_enc_lvl::T> msg(1 << iter);
@@ -322,36 +313,15 @@ int main(int argc, char* argv[]) {
     auto res = d_lwes_res->template get<lwe_enc_lvl>();
     auto src = d_lwes->template get<lwe_enc_lvl>();
 
-    // HalfBoostrapping<Lvl10, Lvl01>(context, d_lwes_res, d_lwes, len_lwe); // x 2>> 1
-    // HalfBoostrapping<Lvl20, Lvl02>(context, d_lwes_res, d_lwes, len_lwe); // 0.5(m0 + m1)
-    // tlwe_evaluator.print_culwe_ct_value(res, len_lwe, "half result");
-
-    // HalfAbsBoostrapping<Lvl10, Lvl01>(context, d_lwes_res, d_lwes, len_lwe); // 0.5|m0 - m1|
-    // tlwe_evaluator.print_culwe_ct_value(res, len_lwe, "half abs result");
     cudaDeviceSynchronize();
-    // for (int iter = 0; iter < 20; iter++) {
-    //     {  // max
-    //         CUDATimer timer("XBoostrapping", 0);
-    //         timer.start();
-    // XBoostrapping<Lvl10, Lvl01>(context, d_lwes_res, d_lwes, len_lwe);  // m
-    // XBoostrapping<Lvl20, Lvl02>(context, d_lwes_res, d_lwes, len_lwe);  // m
+    for (int iter = 0; iter < 20; iter++) {
+        {  // max
+            CUDATimer timer("LWE ADD", 0);
+            timer.start();
+            tlwe_evaluator.add(src, src, res, len_lwe);
+            timer.stop();
+        }
+    }
 
-    // HalfBoostrapping<Lvl10, Lvl10>(context, d_lwes_res, d_lwes, len_lwe);  // x 2>> 1
-    // HalfBoostrapping<Lvl20, Lvl02>(context, d_lwes_res, d_lwes, len_lwe);  // x 2>> 1
-
-    SignBoostrapping<Lvl10, Lvl01>(context, d_lwes_res, d_lwes, len_lwe);
-    // SignBoostrapping<Lvl20, Lvl02>(context, d_lwes_res, d_lwes, len_lwe);
-    //         timer.stop();
-    //     }
-    // }
-
-    // tlwe_evaluator.print_culwe_ct_value(res, len_lwe, "X result");
-    // tlwe_evaluator.print_culwe_ct_value_double(res, len_lwe, "X result");
-    tlwe_evaluator.print_culwe_ct_value_double_err(res, len_lwe, "X result", sparse);
-
-    // IndexBoostrapping<Lvl10, Lvl01>(context, d_lwes_res, d_lwes, len_lwe);
-    // tlwe_evaluator.print_culwe_ct_value(res, len_lwe, "Index result");
-
-    // SignBoostrapping<Lvl10, Lvl01>(context, d_lwes_res, d_lwes, len_lwe);
-    // tlwe_evaluator.print_culwe_ct_value(res, len_lwe, "Sign result");
+    tlwe_evaluator.print_culwe_ct_value_double_err(res, len_lwe, "ADD Result", sparse);
 }

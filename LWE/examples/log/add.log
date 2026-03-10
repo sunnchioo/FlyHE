@@ -1,0 +1,65 @@
+*********** L1 **********
+./bin/cuTFHEpp/examples/cuadd 8
+Setting LWE Parameters...
+try loading keys
+LWE ADD, 1, 0.01024, 0.01024 ms.
+cuLWE value vector: ADD Result
+LWE ciphertext vector: ADD Result
+error: 0 size: 8
+
+./bin/cuTFHEpp/examples/cuadd 64
+Setting LWE Parameters...
+try loading keys
+LWE ADD, 1, 0.006144, 0.006144 ms.
+cuLWE value vector: ADD Result
+LWE ciphertext vector: ADD Result
+error: 0 size: 64
+
+./bin/cuTFHEpp/examples/cuadd 256
+Setting LWE Parameters...
+try loading keys
+LWE ADD, 1, 0.007168, 0.007168 ms.
+cuLWE value vector: ADD Result
+LWE ciphertext vector: ADD Result
+error: 0 size: 256
+
+./bin/cuTFHEpp/examples/cuadd 1024
+Setting LWE Parameters...
+try loading keys
+LWE ADD, 1, 0.01024, 0.01024 ms.
+cuLWE value vector: ADD Result
+LWE ciphertext vector: ADD Result
+error: 0 size: 1024
+
+*********** L2 **********
+./bin/cuTFHEpp/examples/cuadd 8
+Setting LWE Parameters...
+try loading keys
+LWE ADD, 1, 0.007168, 0.007168 ms.
+cuLWE value vector: ADD Result
+LWE ciphertext vector: ADD Result
+error: 0 size: 8
+
+./bin/cuTFHEpp/examples/cuadd 64
+Setting LWE Parameters...
+try loading keys
+LWE ADD, 1, 0.007168, 0.007168 ms.
+cuLWE value vector: ADD Result
+LWE ciphertext vector: ADD Result
+error: 0 size: 64
+
+./bin/cuTFHEpp/examples/cuadd 256
+Setting LWE Parameters...
+try loading keys
+LWE ADD, 1, 0.009216, 0.009216 ms.
+cuLWE value vector: ADD Result
+LWE ciphertext vector: ADD Result
+error: 0 size: 256
+
+./bin/cuTFHEpp/examples/cuadd 1024
+Setting LWE Parameters...
+try loading keys
+LWE ADD, 1, 0.038912, 0.038912 ms.
+cuLWE value vector: ADD Result
+LWE ciphertext vector: ADD Result
+error: 0 size: 1024

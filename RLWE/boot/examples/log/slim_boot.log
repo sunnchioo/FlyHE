@@ -1,0 +1,165 @@
+Setting Parameters...
+Generating secret key with hamming weight: 192
+Setting decoding sparse slots to: 32768
+gpu_ckks_msg_vec_size: 65536
+Generating Optimal Minimax Polynomials...
+Adding Bootstrapping Keys...
+create galois keys. 
+Galois key size: 47
+Galois key generated from steps vector.
+Generating Linear Transformation Coefficients...
+input: 0.510311 0.278063 0.50429 -0.727455 0.806538 -0.811863 0.149141 -0.254225 -0.452252 -0.219458 
+modulus: 30 data: 0.510311 0.278063 0.50429 -0.727455 0.806538 -0.811863 0.149141 -0.254225 -0.452252 -0.219458 
+before: 0.510311 0.278063 0.50429 -0.727455 0.806538 -0.811863 0.149141 -0.254225 -0.452252 -0.219458 
+Bootstrapping took: 462.014 ms
+Return cipher level: 19
+0.510311 <----> 1.77984e+14
+0.278063 <----> 1.77984e+14
+0.50429 <----> 1.77984e+14
+-0.727455 <----> 1.77984e+14
+0.806538 <----> 1.77984e+14
+-0.811863 <----> 1.77984e+14
+0.149141 <----> 1.77984e+14
+-0.254225 <----> 1.77984e+14
+-0.452252 <----> 1.77984e+14
+-0.219458 <----> 1.77984e+14
+Mean absolute error: 1.77984e+14
+
+
+
+
+Setting Parameters...
+Generating secret key with hamming weight: 192
+Setting decoding sparse slots to: 4096
+gpu_ckks_msg_vec_size: 65536
+Generating Optimal Minimax Polynomials...
+Adding Bootstrapping Keys...
+create galois keys. 
+Galois key size: 38
+Galois key generated from steps vector.
+Generating Linear Transformation Coefficients...
+input: 0.510311 0.278063 0.50429 -0.727455 0.806538 -0.811863 0.149141 -0.254225 -0.452252 -0.219458 
+modulus: 30 data: 0.510311 0.278063 0.50429 -0.727455 0.806538 -0.811863 0.149141 -0.254225 -0.452252 -0.219458 
+before: 0.510311 0.278063 0.50429 -0.727455 0.806538 -0.811863 0.149141 -0.254225 -0.452252 -0.219458 
+Subsum... 
+1ms
+cipher scale: 2.2518e+15
+Slot-to-coeff... 
+69ms
+s2crtn scale: 7.73715e+25
+Modulus Raising... 
+0ms
+modulus: 30 data: 1.24377e-11 4.18609e-11 4.27283e-10 4.85844e-10 1.67766e-10 -1.80022e-10 1.1961e-10 -6.91907e-10 2.71952e-10 1.52222e-10 
+modulus: 30 data: 1.24377e-11 4.18609e-11 4.27283e-10 4.85844e-10 1.67766e-10 -1.80022e-10 1.1961e-10 -6.91907e-10 2.71952e-10 1.52222e-10 
+Coeff-to-slot... 
+120ms
+modulus: 27 data: 1.8565e-14 1.01158e-14 1.83459e-14 -2.64646e-14 2.93416e-14 -2.95353e-14 5.42569e-15 -9.24861e-15 -1.64528e-14 -7.98382e-15 
+rtn scale: 2.2518e+15
+Modular reduction... 
+boot modular reduction scale: 2.2518e+15 2.2518e+15
+54ms
+modulus: 19 data: 2.91083e+254 -1.16082e+255 -1.87062e+255 -9.62715e+254 1.40034e+255 2.56068e+255 -9.60691e+254 4.28507e+254 7.25608e+254 8.80196e+254 
+Bootstrapping took: 302.272 ms
+Return cipher level: 19
+0.510311 <----> 9.31466e+255
+0.278063 <----> -3.71463e+256
+0.50429 <----> -5.98596e+256
+-0.727455 <----> -3.08069e+256
+0.806538 <----> 4.48108e+256
+-0.811863 <----> 8.19417e+256
+0.149141 <----> -3.07421e+256
+-0.254225 <----> 1.37122e+256
+-0.452252 <----> 2.32194e+256
+-0.219458 <----> 2.81662e+256
+Mean absolute error: 2.77585e+256
+
+
+Setting Parameters...
+Generating secret key with hamming weight: 192
+Setting decoding sparse slots to: 1024
+gpu_ckks_msg_vec_size: 65536
+Generating Optimal Minimax Polynomials...
+Adding Bootstrapping Keys...
+create galois keys. 
+Galois key size: 35
+Galois key generated from steps vector.
+Generating Linear Transformation Coefficients...
+input: 0.510311 0.278063 0.50429 -0.727455 0.806538 -0.811863 0.149141 -0.254225 -0.452252 -0.219458 
+modulus: 30 data: 0.510311 0.278063 0.50429 -0.727455 0.806538 -0.811863 0.149141 -0.254225 -0.452252 -0.219458 
+before: 0.510311 0.278063 0.50429 -0.727455 0.806538 -0.811863 0.149141 -0.254225 -0.452252 -0.219458 
+Subsum... 
+1ms
+cipher scale: 2.2518e+15
+Slot-to-coeff... 
+46ms
+s2crtn scale: 7.73715e+25
+Modulus Raising... 
+0ms
+modulus: 30 data: 3.93173e-11 1.33881e-10 -5.02795e-10 -5.09768e-10 -2.8102e-10 1.93679e-10 -2.13408e-10 3.90051e-10 -4.68308e-10 -2.59649e-11 
+modulus: 30 data: 3.93173e-11 1.33881e-10 -5.02795e-10 -5.09768e-10 -2.8102e-10 1.93679e-10 -2.13408e-10 3.90051e-10 -4.68308e-10 -2.59649e-11 
+Coeff-to-slot... 
+92ms
+modulus: 27 data: -1.78147e-14 1.01158e-14 -1.80338e-14 9.91511e-15 -7.03809e-15 6.84435e-15 5.42569e-15 -9.24861e-15 -1.64528e-14 -7.98382e-15 
+rtn scale: 2.2518e+15
+Modular reduction... 
+boot modular reduction scale: 2.2518e+15 2.2518e+15
+54ms
+modulus: 19 data: 2.68739e+254 -6.84666e+254 2.34436e+254 -5.41686e+254 -3.842e+254 6.50875e+254 1.97817e+254 2.01985e+254 9.0238e+254 1.22974e+255 
+Bootstrapping took: 251.084 ms
+Return cipher level: 19
+0.510311 <----> 8.59964e+255
+0.278063 <----> -2.19093e+256
+0.50429 <----> 7.50194e+255
+-0.727455 <----> -1.73339e+256
+0.806538 <----> -1.22944e+256
+-0.811863 <----> 2.0828e+256
+0.149141 <----> 6.33013e+255
+-0.254225 <----> 6.46351e+255
+-0.452252 <----> 2.88761e+256
+-0.219458 <----> 3.93517e+256
+Mean absolute error: 1.41122e+256
+
+Setting Parameters...
+Generating secret key with hamming weight: 192
+Setting decoding sparse slots to: 256
+gpu_ckks_msg_vec_size: 65536
+Generating Optimal Minimax Polynomials...
+Adding Bootstrapping Keys...
+create galois keys. 
+Galois key size: 28
+Galois key generated from steps vector.
+Generating Linear Transformation Coefficients...
+input: 0.510311 0.278063 0.50429 -0.727455 0.806538 -0.811863 0.149141 -0.254225 -0.452252 -0.219458 
+modulus: 30 data: 0.510311 0.278063 0.50429 -0.727455 0.806538 -0.811863 0.149141 -0.254225 -0.452252 -0.219458 
+before: 0.510311 0.278063 0.50429 -0.727455 0.806538 -0.811863 0.149141 -0.254225 -0.452252 -0.219458 
+Subsum... 
+3ms
+cipher scale: 2.2518e+15
+Slot-to-coeff... 
+33ms
+s2crtn scale: 7.73715e+25
+Modulus Raising... 
+0ms
+modulus: 30 data: -8.40976e-11 -2.84718e-11 -1.80734e-10 2.23699e-10 -1.22962e-10 5.96867e-11 2.61571e-11 -6.81437e-11 3.03362e-10 1.7289e-11 
+modulus: 30 data: -8.40976e-11 -2.84718e-11 -1.80734e-10 2.23699e-10 -1.22962e-10 5.96867e-11 2.61571e-11 -6.81437e-11 3.03362e-10 1.7289e-11 
+Coeff-to-slot... 
+60ms
+modulus: 27 data: 3.75114e-16 1.02092e-15 1.56084e-16 8.20193e-16 2.05683e-15 -2.25057e-15 -3.66923e-15 -1.5369e-16 1.73706e-15 1.1111e-15 
+rtn scale: 2.2518e+15
+Modular reduction... 
+boot modular reduction scale: 2.2518e+15 2.2518e+15
+54ms
+modulus: 19 data: -4.21778e+254 -5.83837e+253 -2.07943e+253 4.53103e+254 -6.85733e+253 1.15173e+254 2.32285e+254 -5.56532e+253 1.19102e+254 -9.42937e+253 
+Bootstrapping took: 208.413 ms
+Return cipher level: 19
+0.510311 <----> -1.34969e+256
+0.278063 <----> -1.86828e+255
+0.50429 <----> -6.65418e+254
+-0.727455 <----> 1.44993e+256
+0.806538 <----> -2.19434e+255
+-0.811863 <----> 3.68552e+255
+0.149141 <----> 7.4331e+255
+-0.254225 <----> -1.7809e+255
+-0.452252 <----> 3.81126e+255
+-0.219458 <----> -3.0174e+255
+Mean absolute error: 6.91539e+255

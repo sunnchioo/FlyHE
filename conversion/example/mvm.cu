@@ -20,7 +20,7 @@ using namespace conver;
 
 using CUDATimer = phantom::util::CUDATimer;
 
-void print_matrix(std::vector<std::vector<double>> &matrix, std::string str) {
+void print_matrix(std::vector<std::vector<double>>& matrix, std::string str) {
     std::cout << str << " : " << std::endl;
     for (size_t i = 0; i < matrix.size(); i++) {
         std::cout << "line " << i << " : ";
@@ -33,13 +33,13 @@ void print_matrix(std::vector<std::vector<double>> &matrix, std::string str) {
 }
 
 void LinearTransform(
-    const PhantomContext &context,
-    PhantomCiphertext &result,
-    std::vector<std::vector<double>> &matrix,
+    const PhantomContext& context,
+    PhantomCiphertext& result,
+    std::vector<std::vector<double>>& matrix,
     double scale,
-    LTPreKey &eval_key,
-    PhantomCKKSEncoder &encoder,
-    PhantomGaloisKey &galois_keys) {
+    LTPreKey& eval_key,
+    PhantomCKKSEncoder& encoder,
+    PhantomGaloisKey& galois_keys) {
     size_t rows = matrix.size();
     size_t columns = matrix.front().size();
     size_t slot_counts = encoder.slot_count();
@@ -118,8 +118,11 @@ int main() {
     load_keys<BootstrappingKeyFFTLvl01, BootstrappingKeyFFTLvl02,
               KeySwitchingKeyLvl10, KeySwitchingKeyLvl20, KeySwitchingKeyLvl21>(sk, ek);
 
-    size_t dim = 64;
-    PhantomRLWE rlwer(dim);
+    // size_t dim = 64
+    size_t rows = 4;
+    size_t cols = 125;
+
+    PhantomRLWE rlwer(rows);
     rlwer.genLWE2RLWEGaloisKeys();
     PhantomCiphertext results;
 
@@ -128,9 +131,9 @@ int main() {
         PhantomCiphertext results;
 
         // 1. Preprocess LWE Matrix
-        std::vector<std::vector<double>> A(dim);
-        for (size_t i = 0; i < dim; i++) {
-            A[i] = std::vector<double>(dim);
+        std::vector<std::vector<double>> A(rows);
+        for (size_t i = 0; i < rows; i++) {
+            A[i] = std::vector<double>(cols);
         }
         double rescale = std::pow(2., rlwer.modulus_bits - rlwer.modq_bits);
 

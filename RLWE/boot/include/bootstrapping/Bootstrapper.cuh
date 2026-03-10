@@ -31,7 +31,7 @@ public:
     long scale_factor;
     long inverse_deg;
 
-    CKKSEvaluator *ckks = nullptr;
+    CKKSEvaluator* ckks = nullptr;
 
     vector<long> slot_vec;
     long slot_index = 0;
@@ -41,7 +41,7 @@ public:
 
     vector<PhantomPlaintext> fftcoeff_plain1, fftcoeff_plain2, invfftcoeff_plain1, invfftcoeff_plain2;
 
-    ModularReducer *mod_reducer;
+    ModularReducer* mod_reducer;
 
     Bootstrapper(
         long _loge,
@@ -53,33 +53,33 @@ public:
         long _sin_cos_deg,
         long _scale_factor,
         long _inverse_deg,
-        CKKSEvaluator *ckks);
+        CKKSEvaluator* ckks);
 
     inline void set_final_scale(double _final_scale) {
         final_scale = _final_scale;
     }
 
     // Add rotation keys needed in bootstrapping (private function)
-    void addLeftRotKeys_Linear_to_vector(vector<int> &gal_steps_vector);
-    void addLeftRotKeys_Linear_to_vector_3(vector<int> &gal_steps_vector);
+    void addLeftRotKeys_Linear_to_vector(vector<int>& gal_steps_vector);
+    void addLeftRotKeys_Linear_to_vector_3(vector<int>& gal_steps_vector);
 
-    void addLeftRotKeys_Linear_to_vector_3_other_slots(vector<int> &gal_steps_vector, long other_logn);
+    void addLeftRotKeys_Linear_to_vector_3_other_slots(vector<int>& gal_steps_vector, long other_logn);
 
-    void addLeftRotKeys_Linear_to_vector_one_depth(vector<int> &gal_steps_vector);
-    void addLeftRotKeys_Linear_to_vector_one_depth_more_depth(vector<int> &gal_steps_vector);
+    void addLeftRotKeys_Linear_to_vector_one_depth(vector<int>& gal_steps_vector);
+    void addLeftRotKeys_Linear_to_vector_one_depth_more_depth(vector<int>& gal_steps_vector);
 
     // Add rotation keys needed in bootstrapping (public function)
-    void addBootKeys(PhantomGaloisKey &gal_keys);
-    void addBootKeys_3(PhantomGaloisKey &gal_keys);
-    void addBootKeys_other_keys(PhantomGaloisKey &gal_keys, vector<int> &other_keys);
-    void addBootKeys_3_other_keys(PhantomGaloisKey &gal_keys, vector<int> &other_keys);
+    void addBootKeys(PhantomGaloisKey& gal_keys);
+    void addBootKeys_3(PhantomGaloisKey& gal_keys);
+    void addBootKeys_other_keys(PhantomGaloisKey& gal_keys, vector<int>& other_keys);
+    void addBootKeys_3_other_keys(PhantomGaloisKey& gal_keys, vector<int>& other_keys);
 
-    void addBootKeys_3_other_slots(PhantomGaloisKey &gal_keys, vector<long> &other_logn_vec);
-    void addBootKeys_3_other_slots_keys(PhantomGaloisKey &gal_keys, vector<long> &other_logn_vec, vector<int> &other_keys);
+    void addBootKeys_3_other_slots(PhantomGaloisKey& gal_keys, vector<long>& other_logn_vec);
+    void addBootKeys_3_other_slots_keys(PhantomGaloisKey& gal_keys, vector<long>& other_logn_vec, vector<int>& other_keys);
 
-    void addBootKeys_hoisting(PhantomGaloisKey &gal_keys);
-    void addBootKeys_one_depth(PhantomGaloisKey &gal_keys);
-    void addBootKeys_one_depth_more_depth(PhantomGaloisKey &gal_keys);
+    void addBootKeys_hoisting(PhantomGaloisKey& gal_keys);
+    void addBootKeys_one_depth(PhantomGaloisKey& gal_keys);
+    void addBootKeys_one_depth_more_depth(PhantomGaloisKey& gal_keys);
 
     void change_logn(long new_logn);
 
@@ -107,114 +107,120 @@ public:
     // Prepare the approximate polynomial
     void prepare_mod_polynomial();
 
-    void subsum(double scale, PhantomCiphertext &cipher);
+    void subsum(double scale, PhantomCiphertext& cipher);
 
     void bsgs_linear_transform(
-        PhantomCiphertext &rtncipher, PhantomCiphertext &cipher, int totlen, int basicstep, int coeff_logn, const vector<vector<complex<double>>> &fftcoeff);
+        PhantomCiphertext& rtncipher, PhantomCiphertext& cipher, int totlen, int basicstep, int coeff_logn, const vector<vector<complex<double>>>& fftcoeff);
     void rotated_bsgs_linear_transform(
-        PhantomCiphertext &rtncipher, PhantomCiphertext &cipher, int totlen, int basicstep, int coeff_logn, const vector<vector<complex<double>>> &fftcoeff);
-    void rotated_nobsgs_linear_transform(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher, int totlen, int coeff_logn, vector<vector<complex<double>>> fftcoeff);
+        PhantomCiphertext& rtncipher, PhantomCiphertext& cipher, int totlen, int basicstep, int coeff_logn, const vector<vector<complex<double>>>& fftcoeff);
+    void rotated_nobsgs_linear_transform(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher, int totlen, int coeff_logn, vector<vector<complex<double>>> fftcoeff);
 
     void bsgs_linear_transform_hoisting(
-        PhantomCiphertext &rtncipher, PhantomCiphertext &cipher, int totlen, int basicstep, int coeff_logn, vector<vector<complex<double>>> fftcoeff);
+        PhantomCiphertext& rtncipher, PhantomCiphertext& cipher, int totlen, int basicstep, int coeff_logn, vector<vector<complex<double>>> fftcoeff);
     void rotated_bsgs_linear_transform_hoisting(
-        PhantomCiphertext &rtncipher, PhantomCiphertext &cipher, int totlen, int basicstep, int coeff_logn, vector<vector<complex<double>>> fftcoeff);
+        PhantomCiphertext& rtncipher, PhantomCiphertext& cipher, int totlen, int basicstep, int coeff_logn, vector<vector<complex<double>>> fftcoeff);
 
-    void sfl_one_depth(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void sfl_full_one_depth(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void sflinv_one_depth(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void sflinv_one_depth_more_depth(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
+    void sfl_one_depth(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void sfl_full_one_depth(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void sflinv_one_depth(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void sflinv_one_depth_more_depth(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
 
-    void sfl(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void sfl_full(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void sflinv(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void sflinv_full(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
+    void sfl(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void sfl_full(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void sflinv(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void sflinv_full(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
 
-    void sfl_3(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void sfl_full_3(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void sfl_half_3(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void sfl_full_half_3(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void sflinv_3(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void sflinv_full_3(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
+    void sfl_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void sfl_full_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void sfl_half_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void sfl_full_half_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void sflinv_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void sflinv_full_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
 
     // ori trans
-    void sfl_full_ori_3(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void sflinv_full_ori_3(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void sfl_sparse_ori_3(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void sflinv_sparse_ori_3(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
+    void sfl_full_ori_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void sflinv_full_ori_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void sfl_sparse_ori_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void sflinv_sparse_ori_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
 
-    void sfl_hoisting(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void sfl_full_hoisting(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void sflinv_hoisting(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void sflinv_full_hoisting(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
+    void sfl_hoisting(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void sfl_full_hoisting(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void sflinv_hoisting(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void sflinv_full_hoisting(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
 
     // original bootstrapping
-    void coefftoslot(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void slottocoeff(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
+    void coefftoslot(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void slottocoeff(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
 
-    void coefftoslot_full(PhantomCiphertext &rtncipher1, PhantomCiphertext &rtncipher2, PhantomCiphertext &cipher);
-    void slottocoeff_full(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher1, PhantomCiphertext &cipher2);
+    void coefftoslot_full(PhantomCiphertext& rtncipher1, PhantomCiphertext& rtncipher2, PhantomCiphertext& cipher);
+    void slottocoeff_full(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher1, PhantomCiphertext& cipher2);
 
     // level-3 LT
-    void coefftoslot_3(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void slottocoeff_3(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void slottocoeff_half_3(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
+    void coefftoslot_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void slottocoeff_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void slottocoeff_half_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
 
-    void coefftoslot_full_3(PhantomCiphertext &rtncipher1, PhantomCiphertext &rtncipher2, PhantomCiphertext &cipher);
-    void slottocoeff_full_3(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher1, PhantomCiphertext &cipher2);
-    void slottocoeff_full_half_3(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher1, PhantomCiphertext &cipher2);
+    void coefftoslot_full_3(PhantomCiphertext& rtncipher1, PhantomCiphertext& rtncipher2, PhantomCiphertext& cipher);
+    void slottocoeff_full_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher1, PhantomCiphertext& cipher2);
+    void slottocoeff_full_half_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher1, PhantomCiphertext& cipher2);
 
     // one input and one output ori trans
-    void coefftoslot_full_3(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void slottocoeff_full_3(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void coefftoslot_sparse_3(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void slottocoeff_sparse_3(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
+    void coefftoslot_full_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void slottocoeff_full_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void coefftoslot_sparse_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void slottocoeff_sparse_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
 
     // original bootstrapping hoisting version
-    void coefftoslot_hoisting(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void slottocoeff_hoisting(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
+    void coefftoslot_hoisting(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void slottocoeff_hoisting(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
 
-    void coefftoslot_full_hoisting(PhantomCiphertext &rtncipher1, PhantomCiphertext &rtncipher2, PhantomCiphertext &cipher);
-    void slottocoeff_full_hoisting(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher1, PhantomCiphertext &cipher2);
+    void coefftoslot_full_hoisting(PhantomCiphertext& rtncipher1, PhantomCiphertext& rtncipher2, PhantomCiphertext& cipher);
+    void slottocoeff_full_hoisting(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher1, PhantomCiphertext& cipher2);
 
     // one depth bootstrapping
-    void coefftoslot_one_depth(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void slottocoeff_one_depth(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
+    void coefftoslot_one_depth(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void slottocoeff_one_depth(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
 
-    void coefftoslot_full_one_depth(PhantomCiphertext &rtncipher1, PhantomCiphertext &rtncipher2, PhantomCiphertext &cipher);
-    void slottocoeff_full_one_depth(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher1, PhantomCiphertext &cipher2);
+    void coefftoslot_full_one_depth(PhantomCiphertext& rtncipher1, PhantomCiphertext& rtncipher2, PhantomCiphertext& cipher);
+    void slottocoeff_full_one_depth(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher1, PhantomCiphertext& cipher2);
+
+    // slim boot
+    void slottocoeff_full_slim_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void bootstrap_sparse_slim_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void bootstrap_full_slim_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void bootstrap_slim_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
 
     // mul_first bootstrapping
-    void coefftoslot_full_mul_first(PhantomCiphertext &rtncipher1, PhantomCiphertext &rtncipher2, PhantomCiphertext &cipher);
-    void modraise_inplace(PhantomCiphertext &cipher);
+    void coefftoslot_full_mul_first(PhantomCiphertext& rtncipher1, PhantomCiphertext& rtncipher2, PhantomCiphertext& cipher);
+    void modraise_inplace(PhantomCiphertext& cipher);
     // new modified for performance
-    void modraise_inplace_new(PhantomCiphertext &cipher);
+    void modraise_inplace_new(PhantomCiphertext& cipher);
 
     // API bootstrapping
-    void bootstrap_sparse(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void bootstrap_full(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
+    void bootstrap_sparse(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void bootstrap_full(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
 
-    void bootstrap_sparse_3(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void bootstrap_full_3(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
+    void bootstrap_sparse_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void bootstrap_full_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
 
-    void bootstrap_sparse_real_3(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void bootstrap_full_real_3(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
+    void bootstrap_sparse_real_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void bootstrap_full_real_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
 
-    void bootstrap_sparse_hoisting(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void bootstrap_full_hoisting(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void bootstrap_one_depth(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void bootstrap_more_depth(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void bootstrap(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void bootstrap_inplace(PhantomCiphertext &cipher);
+    void bootstrap_sparse_hoisting(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void bootstrap_full_hoisting(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void bootstrap_one_depth(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void bootstrap_more_depth(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void bootstrap(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void bootstrap_inplace(PhantomCiphertext& cipher);
 
-    void bootstrap_3(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void bootstrap_inplace_3(PhantomCiphertext &cipher);
+    void bootstrap_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void bootstrap_inplace_3(PhantomCiphertext& cipher);
 
-    void bootstrap_real_3(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void bootstrap_inplace_real_3(PhantomCiphertext &cipher);
+    void bootstrap_real_3(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void bootstrap_inplace_real_3(PhantomCiphertext& cipher);
 
-    void bootstrap_hoisting(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
-    void bootstrap_inplace_hoisting(PhantomCiphertext &cipher);
+    void bootstrap_hoisting(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
+    void bootstrap_inplace_hoisting(PhantomCiphertext& cipher);
 
-    void bootstrap_slim(PhantomCiphertext &rtncipher, PhantomCiphertext &cipher);
+    void bootstrap_slim(PhantomCiphertext& rtncipher, PhantomCiphertext& cipher);
 };

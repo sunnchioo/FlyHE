@@ -53,7 +53,7 @@ struct lvl1param {
     static constexpr std::uint32_t n = 1 << nbit;  // dimension
     static constexpr std::uint32_t k = 1;          // (k+1) rows of Gadget matrix
 
-    //
+    // autohog
     // static constexpr std::uint32_t l = 3;
     // static constexpr std::uint32_t Bgbit = 6;
 
@@ -78,7 +78,7 @@ struct lvl1param {
     // using T = uint64_t;               // Torus representation
     static constexpr T μ = 1U << 26;  // μ = Δ, 31-plain_modulus_bit
     // static constexpr uint32_t plain_modulus = 2;
-    static constexpr uint32_t plain_modulus_bit = 5;
+    static constexpr uint32_t plain_modulus_bit = 4;
     static constexpr uint32_t plain_modulus = 1 << plain_modulus_bit;  // 4
     static constexpr double Δ =
         static_cast<double>(1ULL << (std::numeric_limits<T>::digits - plain_modulus_bit - 1));  // 留出有 1 bit
@@ -90,6 +90,10 @@ struct lvl2param {
                                                    // ease of polynomial multiplication.
     static constexpr std::uint32_t n = 1 << nbit;  // dimension
     static constexpr std::uint32_t k = 1;
+
+    // autohog
+    // static constexpr std::uint32_t l = 2;
+    // static constexpr std::uint32_t Bgbit = 15;
 
     // static constexpr std::uint32_t l = 4;
     // static constexpr std::uint32_t Bgbit = 9;

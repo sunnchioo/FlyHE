@@ -34,11 +34,11 @@ int main() {
     // long sparse_slots = (1 << logn);
 
     /////////////// length /////////////////
-    long logN = 16;  // 16, 14
+    long logN = 16; // 16, 14
     long loge = 10;
 
-    long logn = 15;
-    long sparse_slots = (1 << logn);  // 256
+    long logn = 7;
+    long sparse_slots = (1 << logn); // 256
 
     /////////////// length /////////////////
 
@@ -50,10 +50,10 @@ int main() {
     // int secret_key_hamming_weight = 0;
 
     // 15 + 14 + 1 = 30 (整除 alpha=6)
-    int remaining_level = 29;  // 15
-    int boot_level = 0;        // >= subsum 1 + coefftoslot 2 + ModReduction 9 + slottocoeff 2
+    int remaining_level = 29; // 15
+    int boot_level = 0;       // >= subsum 1 + coefftoslot 2 + ModReduction 9 + slottocoeff 2
     int total_level = remaining_level + boot_level;
-    int special_prime_len = 2;  // 整除才可
+    int special_prime_len = 2; // 整除才可
 
     vector<int> coeff_bit_vec;
     coeff_bit_vec.push_back(logq);
@@ -108,12 +108,12 @@ int main() {
 
     std::cout << "Adding Bootstrapping Keys..." << endl;
     vector<int> gal_steps_vector;
-    gal_steps_vector.push_back(0);  // 16个
+    gal_steps_vector.push_back(0); // 16个
     for (int i = 0; i < logN - 1; i++) {
         gal_steps_vector.push_back((1 << i));
         gal_steps_vector.push_back(-(1 << i));
     }
-    bootstrapper.addLeftRotKeys_Linear_to_vector_3(gal_steps_vector);  // push back bsgs steps
+    bootstrapper.addLeftRotKeys_Linear_to_vector_3(gal_steps_vector); // push back bsgs steps
 
     ckks_evaluator.decryptor.create_galois_keys_from_steps(gal_steps_vector, *(ckks_evaluator.galois_keys));
     // cudaDeviceSynchronize();

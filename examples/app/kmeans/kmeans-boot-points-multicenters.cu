@@ -58,7 +58,8 @@ void Compare(CKKSEvaluator &ckks, PhantomCiphertext &cipher0, PhantomCiphertext 
 
     // ckks.re_encrypt(bool_ct[0]);
     // std::cout << "sub scale 1: " << bool_ct[0].scale() << std::endl; // 7.03688e+13
-    auto sgn = ckks.sgn_eval(bool_ct[0], 2, 2);  // 2: 16; 3:25; 4: 32
+    auto sgn = ckks.sgn_eval(bool_ct[0], 2, 2); // 2: 16; 3:25; 4: 32
+    // boot to 20
     // ckks.print_decrypted_ct(sgn, 10, "sgn");
 
     ckks.evaluator.add_const(sgn, -0.5, bool_ct[0]);
@@ -103,7 +104,7 @@ void EuclideanDistanceMultiCenters(CKKSEvaluator &ckks, std::vector<PhantomCiphe
     mask[0] = 1.0;
     for (size_t icenters = 0; icenters < centers; icenters++) {
         for (size_t ipoints = 0; ipoints < points; ipoints++) {
-            ckks.evaluator.multiply_vector_inplace_reduced_error(distance_cipher[icenters][ipoints], mask);  // get first sum
+            ckks.evaluator.multiply_vector_inplace_reduced_error(distance_cipher[icenters][ipoints], mask); // get first sum
             ckks.evaluator.rescale_to_next_inplace(distance_cipher[icenters][ipoints]);
         }
     }
@@ -155,7 +156,7 @@ void EuclideanDistanceMultiCenters(CKKSEvaluator &ckks, std::vector<PhantomCiphe
             }
 
             // mask
-            ckks.evaluator.multiply_vector_inplace_reduced_error(distance_temp, mask);  // get first sum
+            ckks.evaluator.multiply_vector_inplace_reduced_error(distance_temp, mask); // get first sum
             ckks.evaluator.rescale_to_next_inplace(distance_temp);
 
             // merge: same point to defferent center
@@ -207,7 +208,7 @@ void CompareDistanceMultiCenters(CKKSEvaluator &ckks, Bootstrapper &bootstrapper
             ckks.evaluator.rotate_vector(distance[iterpoints], (1 << (idepth + 1)) - 1, *(ckks.galois_keys), temp);
             // ckks.print_decrypted_ct(distance[iterpoints], 10, "--dis0");
             // ckks.print_decrypted_ct(temp, 10, "--dis1");
-            Compare(ckks, distance[iterpoints], temp, bool_temp);  // 18 + 3
+            Compare(ckks, distance[iterpoints], temp, bool_temp); // 18 + 3
             // std::cout << "after compare level: " << bool_temp[0].coeff_modulus_size() << " chain: " << bool_temp[0].chain_index() << std::endl;
             // ckks.print_decrypted_ct(bool_temp[0], 10, "bool_temp[0]");
             // ckks.print_decrypted_ct(bool_temp[1], 10, "bool_temp[1]");
@@ -215,7 +216,7 @@ void CompareDistanceMultiCenters(CKKSEvaluator &ckks, Bootstrapper &bootstrapper
             // exit(0);
 
             // set mask
-            std::fill(mask[0].data(), mask[0].data() + centers, 0.0);  // all
+            std::fill(mask[0].data(), mask[0].data() + centers, 0.0); // all
             std::fill(mask[1].data(), mask[1].data() + centers, 0.0);
             std::fill(mask[2].data(), mask[2].data() + centers, 0.0);
             for (size_t icenters = 0; icenters < centers; icenters += (2 * (1 << (idepth + 1)))) {
@@ -313,7 +314,7 @@ void CompareDistanceMultiCenters(CKKSEvaluator &ckks, Bootstrapper &bootstrapper
             ckks.evaluator.add_inplace_reduced_error(sum, temp);
             // ckks.print_decrypted_ct(sum, 10, "sum1");
 
-            ckks.evaluator.rotate_vector(distance[iterpoints], rotate_step[2], *(ckks.galois_keys), temp);  // 优化点：旋转消除
+            ckks.evaluator.rotate_vector(distance[iterpoints], rotate_step[2], *(ckks.galois_keys), temp); // 优化点：旋转消除
             ckks.evaluator.multiply_inplace_reduced_error(temp, trans_matrix[idepth][2], *(ckks.relin_keys));
             ckks.evaluator.rescale_to_next_inplace(temp);
             ckks.evaluator.add_inplace_reduced_error(sum, temp);
@@ -356,7 +357,7 @@ void CompareDistanceMultiCenters(CKKSEvaluator &ckks, Bootstrapper &bootstrapper
 
         // std::cout << "get id..." << std::endl;
         // get centers id
-        for (size_t idepth = 0; idepth < depth; idepth++) {
+        for (size_t idepth = 0; idepth < depth; idepth++) { // 3 个level
             size_t curr_depth = depth - idepth - 1;
 
             if (curr_depth == 0 || curr_depth == depth - 1) {
@@ -461,11 +462,11 @@ int main() {
     long inverse_deg = 1;
 
     /////////////// length /////////////////
-    long logN = 16;  // 16, 14
+    long logN = 16; // 16, 14
     long loge = 10;
 
     long logn = 15;
-    long sparse_slots = (1 << logn);  // 256
+    long sparse_slots = (1 << logn); // 256
 
     int logp = 56;
     int logq = 61;
@@ -475,12 +476,12 @@ int main() {
 
     // (41,7)(39, 6)-->comp(3,3) or comp(4,4); (25,4)-->comp(2,2)
     int remaining_level = 29;
-    int boot_level = 14;                             // >= subsum 1 + coefftoslot 2 + ModReduction 9 + slottocoeff 2
-    int total_level = remaining_level + boot_level;  // 38
+    int boot_level = 14;                            // >= subsum 1 + coefftoslot 2 + ModReduction 9 + slottocoeff 2
+    int total_level = remaining_level + boot_level; // 38
     int special_prime_len = 4;
 
     vector<int> coeff_bit_vec;
-    coeff_bit_vec.push_back(logq);  // 39
+    coeff_bit_vec.push_back(logq); // 39
     for (int i = 0; i < remaining_level; i++) {
         coeff_bit_vec.push_back(logp);
     }
@@ -527,7 +528,7 @@ int main() {
         gal_steps_vector.push_back((1 << i));
         gal_steps_vector.push_back(-(1 << i));
     }
-    bootstrapper.addLeftRotKeys_Linear_to_vector_3(gal_steps_vector);  // push back bsgs steps
+    bootstrapper.addLeftRotKeys_Linear_to_vector_3(gal_steps_vector); // push back bsgs steps
 
     ckks_evaluator.decryptor.create_galois_keys_from_steps(gal_steps_vector, *(ckks_evaluator.galois_keys));
 
@@ -542,7 +543,7 @@ int main() {
               << std::endl;
 
     // set input data
-    std::vector<std::vector<double>> data = FileIO<double>::LoadCSV3D("/mnt/data2/home/syt/data/Libra/benchmark/app/data/kmeans/16data2cent.csv");  // (points, dim)
+    std::vector<std::vector<double>> data = FileIO<double>::LoadCSV3D("/mnt/data2/home/syt/data/Libra/benchmark/app/data/kmeans/16data2cent.csv"); // (points, dim)
     if (slot_count < data.size()) {
         throw std::logic_error("Error: Get Out Input Length.");
     }
@@ -562,8 +563,8 @@ int main() {
      *     1    0.2     0.2
      *     2    0.3     0.3
      */
-    std::vector<std::vector<double>> input(points, std::vector<double>(slot_count, 0.0));    // input: 一个输入一个密文，维度为一个密文里
-    std::vector<std::vector<double>> center(centers, std::vector<double>(slot_count, 0.1));  // center: 一个 centers 一个密文
+    std::vector<std::vector<double>> input(points, std::vector<double>(slot_count, 0.0));   // input: 一个输入一个密文，维度为一个密文里
+    std::vector<std::vector<double>> center(centers, std::vector<double>(slot_count, 0.1)); // center: 一个 centers 一个密文
     for (size_t i = 0; i < points; i++) {
         std::copy(data[i].begin(), data[i].begin() + dim, input[i].begin());
     }
@@ -626,7 +627,7 @@ int main() {
     for (size_t iter = 0; iter < iter_count; iter++) {
         cout << "iter: " << iter << endl;
 
-        cout << "begin level: " << points_cipher[0].coeff_modulus_size() << endl;  //
+        cout << "begin level: " << points_cipher[0].coeff_modulus_size() << endl; //
 
         // (Euclidean distance)^2
         {
@@ -634,44 +635,44 @@ int main() {
             timer.start();
             // EuclideanDistance(ckks_evaluator, points_cipher, center_cipher, points, dim, centers, distance_matrix_cipher); // 2 level
             // EuclideanDistanceMultiCenters(ckks_evaluator, points_cipher, center_cipher, points, dim, centers, distance_matrix_cipher, distance_cipher); // 2 level
-            EuclideanDistanceMultiCenters(ckks_evaluator, points_cipher, center_cipher, points, dim, centers, distance_cipher);  // 2 level
+            EuclideanDistanceMultiCenters(ckks_evaluator, points_cipher, center_cipher, points, dim, centers, distance_cipher); // 2 level
             timer.stop();
             total_time += timer.get_mean_time();
         }
         // for (size_t ipoints = 0; ipoints < points; ipoints++) {
         //     ckks_evaluator.print_decrypted_ct(distance_cipher[ipoints], 10, "distance 0" + std::to_string(ipoints));
         // }
-        cout << "distence level: " << distance_cipher[0].coeff_modulus_size() << endl;  //
-        cout << "distence chain: " << distance_cipher[0].chain_index() << endl;         //
+        cout << "distence level: " << distance_cipher[0].coeff_modulus_size() << endl; //
+        cout << "distence chain: " << distance_cipher[0].chain_index() << endl;        //
         // exit(0);
 
         // compare
         {
             CUDATimer timer("CompareDistance", s);
             timer.start();
-            CompareDistanceMultiCenters(ckks_evaluator, bootstrapper, distance_cipher, centers, points, centers_id_cipher);  // 18 level
+            CompareDistanceMultiCenters(ckks_evaluator, bootstrapper, distance_cipher, centers, points, centers_id_cipher); // 18 level
             timer.stop();
             total_time += timer.get_mean_time();
         }
         // for (size_t i = 0; i < points; i++) {
         //     ckks_evaluator.print_decrypted_ct(bool_cipher[0][i], 10, "bool0");
         // }
-        cout << "bool_cipher level: " << centers_id_cipher[0].coeff_modulus_size() << endl;  //
-        cout << "bool_cipher chain: " << centers_id_cipher[0].chain_index() << endl;         //
+        cout << "bool_cipher level: " << centers_id_cipher[0].coeff_modulus_size() << endl; //
+        cout << "bool_cipher chain: " << centers_id_cipher[0].chain_index() << endl;        //
 
         // exit(0);
         // update center
         {
             CUDATimer timer("UpdateCenters", s);
             timer.start();
-            UpdateCenters(ckks_evaluator, center_cipher, points_cipher, centers, points, dim, centers_id_cipher);  // 2 level
+            UpdateCenters(ckks_evaluator, center_cipher, points_cipher, centers, points, dim, centers_id_cipher); // 2 level
             timer.stop();
             total_time += timer.get_mean_time();
         }
         // for (size_t icenters = 0; icenters < centers; icenters++) {
         //     ckks_evaluator.print_decrypted_ct(center_cipher[icenters], 10, "center " + std::to_string(icenters));
         // }
-        cout << "center_cipher level: " << center_cipher[0].coeff_modulus_size() << endl;  // 3
+        cout << "center_cipher level: " << center_cipher[0].coeff_modulus_size() << endl; // 3
         // center 0 : 0.0600291 - 0.0599984 - 2.57949e-10 7.29065e-10 1.20807e-10 8.34692e-11 - 7.82883e-10 2.55898e-11 1.14999e-09 - 2.61322e-10
         // center 1 : 2.16995 - 0.0800007 - 4.33218e-10 2.52346e-10 1.40643e-09 - 7.55927e-10 8.60584e-11 - 3.19693e-10 - 1.41437e-09 6.21378e-10
 
@@ -699,7 +700,7 @@ int main() {
         for (size_t icenters = 0; icenters < centers; icenters++) {
             ckks_evaluator.print_decrypted_ct(center_cipher[icenters], 10, "boot center " + std::to_string(icenters));
         }
-        cout << "center_cipher level: " << center_cipher[0].coeff_modulus_size() << endl;  // 25
+        cout << "center_cipher level: " << center_cipher[0].coeff_modulus_size() << endl; // 25
     }
     std::cout << "sum time: " << total_time / iter_count << std::endl;
 }

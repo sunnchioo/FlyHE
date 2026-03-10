@@ -1,3 +1,5 @@
+#include <nvToolsExt.h>
+
 #include <algorithm>
 #include <functional>
 #include <random>
@@ -40,13 +42,16 @@ int main() {
     double lwe_scale = pow(2.0, scale_bits);
     // double lwe_scale = lwe_enc_lvl::Δ;
 
-    TFHESecretKey sk;  // 定义时已经初始化
+    TFHESecretKey sk; // 定义时已经初始化
     TFHEEvalKey ek;
     load_keys<BootstrappingKeyFFTLvl01, BootstrappingKeyFFTLvl02,
               KeySwitchingKeyLvl10, KeySwitchingKeyLvl20, KeySwitchingKeyLvl21>(sk, ek);
 
     // repack (all to one)
-    std::vector<uint32_t> msg = {0, 1, 2, 3};
+    std::vector<uint32_t> msg(32768);
+    for (size_t i = 0; i < msg.size(); i++) {
+        msg[i] = 2.6;
+    }
 
     PhantomRLWE rlwer(msg.size());
     rlwer.genLWE2RLWEGaloisKeys();
@@ -55,16 +60,18 @@ int main() {
     std::vector<TLWELvl1> h_lwes(msg.size());
     for (size_t i = 0; i < msg.size(); i++) {
         h_lwes[i] = TFHEpp::tlweSymInt32Encrypt<lwe_enc_lvl>(msg[i], lwe_enc_lvl::α, lwe_scale, sk.key.get<lwe_enc_lvl>());
-        std::cout << "check encrypt: " << TFHEpp::tlweSymInt32Decrypt<lwe_enc_lvl>(h_lwes[i], lwe_scale, sk.key.get<lwe_enc_lvl>()) << std::endl;
+        // std::cout << "check encrypt: " << TFHEpp::tlweSymInt32Decrypt<lwe_enc_lvl>(h_lwes[i], lwe_scale, sk.key.get<lwe_enc_lvl>()) << std::endl;
     }
 
     {
+        nvtxRangePushA("conver::repack");
         CUDATimer timer("Repack", 0);
         timer.start();
-        conver::repack(results, h_lwes, rlwer, sk);  // 11 levels
+        conver::repack(results, h_lwes, rlwer, sk); // 11 levels
         timer.stop();
+        nvtxRangePop();
     }
 
     rlwer.print_decrypted_ct(results, 10, "Repack results");
-    std::cout << "conversion level: " << results.coeff_modulus_size() << " chain: " << results.chain_index() << std::endl;  // 13 12
+    std::cout << "conversion level: " << results.coeff_modulus_size() << " chain: " << results.chain_index() << std::endl; // 13 12
 }

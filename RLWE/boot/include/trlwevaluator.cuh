@@ -39,7 +39,8 @@ namespace rlwe {
 
     struct CKKSConfig {  // extract
         long logN = 16;
-        long logn = 15;
+        // long logn = 15;
+        long logn = 7;  // sparse
         long sparse_slots = 1 << logn;
 
         int logq = 51;
@@ -88,10 +89,10 @@ namespace rlwe {
 
         ~trlwevaluator() = default;
 
-        trlwevaluator(const trlwevaluator &) = delete;
-        trlwevaluator &operator=(const trlwevaluator &) = delete;
+        trlwevaluator(const trlwevaluator&) = delete;
+        trlwevaluator& operator=(const trlwevaluator&) = delete;
 
-        const PhantomSecretKey &secret_key() const {
+        const PhantomSecretKey& secret_key() const {
             if (!secret_key_) {
                 throw std::logic_error("Secret key not initialized");
             }

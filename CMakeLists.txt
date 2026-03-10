@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.20)
 
 set(CMAKE_C_COMPILER "/usr/bin/gcc-13")
 set(CMAKE_CXX_COMPILER "/usr/bin/g++-13")
-set(CMAKE_CUDA_COMPILER "/usr/local/cuda-12.6/bin/nvcc")
+# set(CMAKE_CUDA_COMPILER "/usr/local/cuda-12.6/bin/nvcc")
+set(CMAKE_CUDA_COMPILER "/usr/local/cuda-12.4/bin/nvcc")
 
 # if (UNIX)
 #   set(CMAKE_C_COMPILER "/usr/bin/gcc-13")

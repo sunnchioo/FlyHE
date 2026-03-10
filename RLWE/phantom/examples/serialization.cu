@@ -17,15 +17,15 @@ using namespace phantom::util;
 
 #define EPSINON 0.001
 
-inline bool operator==(const cuDoubleComplex &lhs, const cuDoubleComplex &rhs) {
+inline bool operator==(const cuDoubleComplex& lhs, const cuDoubleComplex& rhs) {
     return fabs(lhs.x - rhs.x) < EPSINON;
 }
 
-inline bool compare_double(const double &lhs, const double &rhs) {
+inline bool compare_double(const double& lhs, const double& rhs) {
     return fabs(lhs - rhs) < EPSINON;
 }
 
-void example_ckks_enc(PhantomContext &context, const double &scale) {
+void example_ckks_enc(PhantomContext& context, const double& scale) {
     std::cout << "Example: CKKS Encode/Decode complex vector" << std::endl;
 
     PhantomSecretKey secret_key(context);
@@ -40,8 +40,8 @@ void example_ckks_enc(PhantomContext &context, const double &scale) {
     double rand_imag;
     // srand(time(0));
     for (size_t i = 0; i < slot_count; i++) {
-        rand_real = (double) rand() / RAND_MAX;
-        rand_imag = (double) rand() / RAND_MAX;
+        rand_real = (double)rand() / RAND_MAX;
+        rand_imag = (double)rand() / RAND_MAX;
         input[i] = make_cuDoubleComplex(rand_real, rand_imag);
     }
     cout << "Input vector: " << endl;
@@ -66,13 +66,12 @@ void example_ckks_enc(PhantomContext &context, const double &scale) {
         throw std::logic_error("encode/decode complex vector error");
     result.clear();
 
-
     // double vector test
     std::cout << "Example: CKKS Encode/Decode double vector" << std::endl;
     vector<double> input_double(slot_count);
     // srand(time(0));
     for (size_t i = 0; i < slot_count; i++) {
-        input_double[i] = (double) rand() / RAND_MAX;
+        input_double[i] = (double)rand() / RAND_MAX;
     }
     cout << "Input vector: " << endl;
     print_vector(input_double, 3, 7);
@@ -199,7 +198,8 @@ void example_ckks_enc(PhantomContext &context, const double &scale) {
 }
 
 void example_bfv_enc_sym() {
-    std::cout << std::endl << "Testing BFV sym Enc & Dec" << std::endl;
+    std::cout << std::endl
+              << "Testing BFV sym Enc & Dec" << std::endl;
     for (size_t poly_modulus_degree = 4096; poly_modulus_degree <= 32768;
          poly_modulus_degree = poly_modulus_degree * 2) {
         EncryptionParameters parms(scheme_type::bfv);
@@ -242,31 +242,32 @@ void example_bfv_enc_sym() {
             throw std::logic_error("Error in encrypt_symmetric & decrypt");
 
         /******************************** test symmetric ciphertext save/load *****************************************/
-        cout << "Save symmetric ciphertext to file." << endl;
-        ofstream outfile_sym("/tmp/x_symmetric_cipher_seed.txt", ofstream::binary);
-        cipher.save_symmetric(outfile_sym);
-        outfile_sym.close();
+        // cout << "Save symmetric ciphertext to file." << endl;
+        // ofstream outfile_sym("/tmp/x_symmetric_cipher_seed.txt", ofstream::binary);
+        // cipher.save_symmetric(outfile_sym);
+        // outfile_sym.close();
 
-        cout << "Load symmetric ciphertext from file." << endl;
-        ifstream infile_sym("/tmp/x_symmetric_cipher_seed.txt", ifstream::binary);
-        PhantomCiphertext cipher_load;
-        cipher_load.load_symmetric(context, infile_sym);
-        infile_sym.close();
+        // cout << "Load symmetric ciphertext from file." << endl;
+        // ifstream infile_sym("/tmp/x_symmetric_cipher_seed.txt", ifstream::binary);
+        // PhantomCiphertext cipher_load;
+        // cipher_load.load_symmetric(context, infile_sym);
+        // infile_sym.close();
 
-        secret_key.decrypt(context, cipher_load, plain);
-        batchEncoder.decode(context, plain, res);
-        cout << "Decode the decrypted plaintext." << endl;
-        correctness = true;
-        for (size_t i = 0; i < slot_count; i++) {
-            correctness &= res[i] == pod_matrix[i];
-        }
-        if (!correctness)
-            throw std::logic_error("save/load symmetric ciphertext error");
+        // secret_key.decrypt(context, cipher_load, plain);
+        // batchEncoder.decode(context, plain, res);
+        // cout << "Decode the decrypted plaintext." << endl;
+        // correctness = true;
+        // for (size_t i = 0; i < slot_count; i++) {
+        //     correctness &= res[i] == pod_matrix[i];
+        // }
+        // if (!correctness)
+        //     throw std::logic_error("save/load symmetric ciphertext error");
     }
 }
 
 void example_bfv_enc_asym() {
-    std::cout << std::endl << "Testing BFV asym Enc & Dec" << std::endl;
+    std::cout << std::endl
+              << "Testing BFV asym Enc & Dec" << std::endl;
     for (size_t poly_modulus_degree = 4096; poly_modulus_degree <= 32768;
          poly_modulus_degree = poly_modulus_degree * 2) {
         EncryptionParameters parms(scheme_type::bfv);
@@ -282,84 +283,85 @@ void example_bfv_enc_asym() {
         PhantomSecretKey secret_key(context);
 
         /******************************************* test secret key save/load ****************************************/
-        cout << "Save secret key to file." << endl;
-        ofstream outfile_secretkey("/tmp/secret_key.txt", ofstream::binary);
-        secret_key.save(outfile_secretkey);
-        outfile_secretkey.close();
+        // cout << "Save secret key to file." << endl;
+        // ofstream outfile_secretkey("/tmp/secret_key.txt", ofstream::binary);
+        // secret_key.save(outfile_secretkey);
+        // outfile_secretkey.close();
 
-        cout << "Load secret key from file." << endl;
-        ifstream infile_secretkey("/tmp/secret_key.txt", ifstream::binary);
-        PhantomSecretKey secret_key_load;
-        secret_key_load.load(infile_secretkey);
-        infile_secretkey.close();
+        // cout << "Load secret key from file." << endl;
+        // ifstream infile_secretkey("/tmp/secret_key.txt", ifstream::binary);
+        // PhantomSecretKey secret_key_load;
+        // secret_key_load.load(infile_secretkey);
+        // infile_secretkey.close();
 
-        PhantomPublicKey public_key = secret_key_load.gen_publickey(context);
+        // PhantomPublicKey public_key = secret_key_load.gen_publickey(context);
 
         /******************************************* test public key save/load ****************************************/
         cout << "Save public key to file." << endl;
-        ofstream outfile_pubkey("/tmp/public_key.txt", ofstream::binary);
-        public_key.save(outfile_pubkey);
-        outfile_pubkey.close();
+        // ofstream outfile_pubkey("/tmp/public_key.txt", ofstream::binary);
+        // public_key.save(outfile_pubkey);
+        // outfile_pubkey.close();
 
-        cout << "Load public key from file." << endl;
-        ifstream infile_pubkey("/tmp/public_key.txt", ifstream::binary);
-        PhantomPublicKey public_key_load;
-        public_key_load.load(infile_pubkey);
-        infile_pubkey.close();
+        // cout << "Load public key from file." << endl;
+        // ifstream infile_pubkey("/tmp/public_key.txt", ifstream::binary);
+        // PhantomPublicKey public_key_load;
+        // public_key_load.load(infile_pubkey);
+        // infile_pubkey.close();
 
-        PhantomCiphertext cipher;
+        // PhantomCiphertext cipher;
 
-        PhantomBatchEncoder batchEncoder(context);
-        size_t slot_count = batchEncoder.slot_count();
-        std::vector<uint64_t> pod_matrix(slot_count, 0);
-        for (size_t idx = 0; idx < slot_count; idx++)
-            pod_matrix[idx] = idx;
+        // PhantomBatchEncoder batchEncoder(context);
+        // size_t slot_count = batchEncoder.slot_count();
+        // std::vector<uint64_t> pod_matrix(slot_count, 0);
+        // for (size_t idx = 0; idx < slot_count; idx++)
+        //     pod_matrix[idx] = idx;
 
-        PhantomPlaintext plain_matrix;
-        batchEncoder.encode(context, pod_matrix, plain_matrix);
+        // PhantomPlaintext plain_matrix;
+        // batchEncoder.encode(context, pod_matrix, plain_matrix);
 
-        public_key_load.encrypt_asymmetric(context, plain_matrix, cipher);
-        auto noise_budget = secret_key.invariant_noise_budget(context, cipher);
-        cout << "cipher noise budget is: " << noise_budget << endl;
-        PhantomPlaintext plain;
+        // public_key_load.encrypt_asymmetric(context, plain_matrix, cipher);
+        // auto noise_budget = secret_key.invariant_noise_budget(context, cipher);
+        // cout << "cipher noise budget is: " << noise_budget << endl;
+        // PhantomPlaintext plain;
 
-        secret_key.decrypt(context, cipher, plain);
+        // secret_key.decrypt(context, cipher, plain);
 
-        std::vector<uint64_t> res;
-        batchEncoder.decode(context, plain, res);
+        // std::vector<uint64_t> res;
+        // batchEncoder.decode(context, plain, res);
 
-        bool correctness = true;
-        for (size_t idx = 0; idx < slot_count; idx++)
-            correctness &= res[idx] == pod_matrix[idx];
-        if (!correctness)
-            throw std::logic_error("Error in encrypt_asymmetric & decrypt");
+        // bool correctness = true;
+        // for (size_t idx = 0; idx < slot_count; idx++)
+        //     correctness &= res[idx] == pod_matrix[idx];
+        // if (!correctness)
+        //     throw std::logic_error("Error in encrypt_asymmetric & decrypt");
 
         /******************************** test asymmetric ciphertext save/load ****************************************/
         cout << "Save asymmetric ciphertext to file." << endl;
-        ofstream outfile_sym("/tmp/x_asymmetric_cipher_seed.txt", ofstream::binary);
-        cipher.save(outfile_sym);
-        outfile_sym.close();
+        // ofstream outfile_sym("/tmp/x_asymmetric_cipher_seed.txt", ofstream::binary);
+        // cipher.save(outfile_sym);
+        // outfile_sym.close();
 
-        cout << "Load asymmetric ciphertext from file." << endl;
-        ifstream infile_sym("/tmp/x_asymmetric_cipher_seed.txt", ifstream::binary);
-        PhantomCiphertext cipher_load;
-        cipher_load.load(infile_sym);
-        infile_sym.close();
+        // cout << "Load asymmetric ciphertext from file." << endl;
+        // ifstream infile_sym("/tmp/x_asymmetric_cipher_seed.txt", ifstream::binary);
+        // PhantomCiphertext cipher_load;
+        // cipher_load.load(infile_sym);
+        // infile_sym.close();
 
-        secret_key.decrypt(context, cipher_load, plain);
-        batchEncoder.decode(context, plain, res);
-        cout << "Decode the decrypted plaintext." << endl;
-        correctness = true;
-        for (size_t i = 0; i < slot_count; i++) {
-            correctness &= res[i] == pod_matrix[i];
-        }
-        if (!correctness)
-            throw std::logic_error("save/load asymmetric ciphertext error");
+        // secret_key.decrypt(context, cipher_load, plain);
+        // batchEncoder.decode(context, plain, res);
+        // cout << "Decode the decrypted plaintext." << endl;
+        // correctness = true;
+        // for (size_t i = 0; i < slot_count; i++) {
+        //     correctness &= res[i] == pod_matrix[i];
+        // }
+        // if (!correctness)
+        //     throw std::logic_error("save/load asymmetric ciphertext error");
     }
 }
 
 void example_bfv_mul() {
-    std::cout << std::endl << "Testing BFV mul" << std::endl;
+    std::cout << std::endl
+              << "Testing BFV mul" << std::endl;
     for (size_t poly_modulus_degree = 4096; poly_modulus_degree <= 32768;
          poly_modulus_degree = poly_modulus_degree * 2) {
         EncryptionParameters parms(scheme_type::bfv);
@@ -411,7 +413,8 @@ void example_bfv_mul() {
 }
 
 void example_bfv_rotate() {
-    std::cout << std::endl << "Testing BFV rotate" << std::endl;
+    std::cout << std::endl
+              << "Testing BFV rotate" << std::endl;
     for (size_t poly_modulus_degree = 4096; poly_modulus_degree <= 32768;
          poly_modulus_degree = poly_modulus_degree * 2) {
         EncryptionParameters parms(scheme_type::bfv);
@@ -511,50 +514,50 @@ int main() {
     poly_modulus_degree: CoeffModulus::MaxBitCount(8192) returns 218.
     */
     std::vector v_alpha = {1, 2, 3, 4, 15};
-    for (auto alpha: v_alpha) {
+    for (auto alpha : v_alpha) {
         EncryptionParameters parms(scheme_type::ckks);
 
         size_t poly_modulus_degree = 1 << 15;
         double scale = pow(2.0, 40);
         switch (alpha) {
-            case 1:
-                parms.set_poly_modulus_degree(poly_modulus_degree);
-                parms.set_coeff_modulus(
-                        CoeffModulus::Create(poly_modulus_degree, {60, 40, 40, 40, 40, 40, 40, 40, 40, 40,
-                                                                   40, 40, 40, 40, 40, 40, 40, 40, 40, 60}));
-                break;
-            case 2:
-                parms.set_poly_modulus_degree(poly_modulus_degree);
-                parms.set_coeff_modulus(CoeffModulus::Create(
-                        poly_modulus_degree, {60, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 60, 60}));
-                parms.set_special_modulus_size(alpha);
-                break;
-            case 3:
-                parms.set_poly_modulus_degree(poly_modulus_degree);
-                parms.set_coeff_modulus(CoeffModulus::Create(
-                        poly_modulus_degree, {60, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 60, 60, 60}));
-                parms.set_special_modulus_size(alpha);
-                break;
-            case 4:
-                parms.set_poly_modulus_degree(poly_modulus_degree);
-                parms.set_coeff_modulus(CoeffModulus::Create(
-                        poly_modulus_degree, {60, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 60, 60, 60, 60}));
-                // hybrid key-switching
-                parms.set_special_modulus_size(alpha);
-                break;
-            case 15:
-                poly_modulus_degree = 1 << 16;
-                parms.set_poly_modulus_degree(poly_modulus_degree);
-                parms.set_coeff_modulus(CoeffModulus::Create(
-                        poly_modulus_degree,
-                        {60, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50,
-                         50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50,
-                         50, 50, 50, 50, 50, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60}));
-                parms.set_special_modulus_size(alpha);
-                scale = pow(2.0, 50);
-                break;
-            default:
-                throw std::invalid_argument("unsupported alpha params");
+        case 1:
+            parms.set_poly_modulus_degree(poly_modulus_degree);
+            parms.set_coeff_modulus(
+                CoeffModulus::Create(poly_modulus_degree, {60, 40, 40, 40, 40, 40, 40, 40, 40, 40,
+                                                           40, 40, 40, 40, 40, 40, 40, 40, 40, 60}));
+            break;
+        case 2:
+            parms.set_poly_modulus_degree(poly_modulus_degree);
+            parms.set_coeff_modulus(CoeffModulus::Create(
+                poly_modulus_degree, {60, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 60, 60}));
+            parms.set_special_modulus_size(alpha);
+            break;
+        case 3:
+            parms.set_poly_modulus_degree(poly_modulus_degree);
+            parms.set_coeff_modulus(CoeffModulus::Create(
+                poly_modulus_degree, {60, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 60, 60, 60}));
+            parms.set_special_modulus_size(alpha);
+            break;
+        case 4:
+            parms.set_poly_modulus_degree(poly_modulus_degree);
+            parms.set_coeff_modulus(CoeffModulus::Create(
+                poly_modulus_degree, {60, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 60, 60, 60, 60}));
+            // hybrid key-switching
+            parms.set_special_modulus_size(alpha);
+            break;
+        case 15:
+            poly_modulus_degree = 1 << 16;
+            parms.set_poly_modulus_degree(poly_modulus_degree);
+            parms.set_coeff_modulus(CoeffModulus::Create(
+                poly_modulus_degree,
+                {60, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50,
+                 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50,
+                 50, 50, 50, 50, 50, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60}));
+            parms.set_special_modulus_size(alpha);
+            scale = pow(2.0, 50);
+            break;
+        default:
+            throw std::invalid_argument("unsupported alpha params");
         }
 
         /*

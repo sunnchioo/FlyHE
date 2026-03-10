@@ -7,7 +7,7 @@
 using namespace std;
 using namespace phantom;
 
-void random_real(vector<double> &vec, size_t size) {
+void random_real(vector<double>& vec, size_t size) {
     // random_device rn;
     // mt19937_64 rnd(rn());
     mt19937_64 rnd(42);
@@ -31,7 +31,7 @@ int main() {
     long logN = 16;  // 16 -> 15  // full only even(14)
     long loge = 10;
 
-    long logn = 8;  // 14 -> 13
+    long logn = 6;  // 14 -> 13
     long sparse_slots = (1 << logn);
 
     int logq = 51;

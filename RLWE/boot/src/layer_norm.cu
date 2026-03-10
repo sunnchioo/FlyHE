@@ -5,7 +5,7 @@
 using namespace rlwe;
 using CUDATimer = phantom::util::CUDATimer;
 
-void LNEvaluator::layer_norm(PhantomCiphertext &a, PhantomCiphertext &y, int len) {  // 假设 \mui = 0
+void LNEvaluator::layer_norm(PhantomCiphertext &a, PhantomCiphertext &y, int len) { // 假设 \mui = 0
     PhantomCiphertext tmp, x2;
 
     int log_step = log2(len);
@@ -31,12 +31,12 @@ void LNEvaluator::layer_norm(PhantomCiphertext &a, PhantomCiphertext &y, int len
         ckks->evaluator.multiply_plain_inplace(y, delta);
         ckks->evaluator.rescale_to_next_inplace(y);
         timer.stop();
-    }
+    } // 2个level
 
     {
         CUDATimer timer("invert_sqrt", 0);
         timer.start();
-        y = ckks->invert_sqrt(y, 4, 2);
+        y = ckks->invert_sqrt(y, 4, 2); // 15个level
         timer.stop();
     }
 
@@ -46,7 +46,7 @@ void LNEvaluator::layer_norm(PhantomCiphertext &a, PhantomCiphertext &y, int len
         ckks->evaluator.mod_switch_to_inplace(a, y.params_id());
         ckks->evaluator.multiply(y, a, y);
         ckks->evaluator.relinearize_inplace(y, *ckks->relin_keys);
-        ckks->evaluator.rescale_to_next_inplace(y);
+        ckks->evaluator.rescale_to_next_inplace(y); // 1个level
         timer.stop();
     }
     // cout << "Moduli left after LayerNorm: " << y.coeff_modulus_size() << endl;

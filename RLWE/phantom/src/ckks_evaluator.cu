@@ -311,9 +311,9 @@ PhantomCiphertext CKKSEvaluator::eval_line(PhantomCiphertext x, PhantomPlaintext
 }
 
 PhantomCiphertext CKKSEvaluator::invert_sqrt(PhantomCiphertext x, int d_newt, int d_gold) {
-    PhantomCiphertext res = init_guess(x);
-    PhantomCiphertext y = newton_iter(x, res, d_newt);
-    pair<PhantomCiphertext, PhantomCiphertext> sqrt_inv_sqrt = goldschmidt_iter(x, y, d_gold);
+    PhantomCiphertext res = init_guess(x);                                                     // 1个level
+    PhantomCiphertext y = newton_iter(x, res, d_newt);                                         // 8个level
+    pair<PhantomCiphertext, PhantomCiphertext> sqrt_inv_sqrt = goldschmidt_iter(x, y, d_gold); // 2*2+2=6个level
     return sqrt_inv_sqrt.second;
 }
 
@@ -403,7 +403,7 @@ pair<PhantomCiphertext, PhantomCiphertext> CKKSEvaluator::goldschmidt_iter(Phant
 }
 
 PhantomCiphertext CKKSEvaluator::newton_iter(PhantomCiphertext x, PhantomCiphertext res, int iter) {
-    for (int i = 0; i < iter; i++) {
+    for (int i = 0; i < iter; i++) { // 4 循环
         PhantomPlaintext three_half, neg_half;
 
         encoder.encode(1.5, scale, three_half);
@@ -503,7 +503,7 @@ void CKKSEvaluator::eval_odd_deg9_poly(vector<double> &a, PhantomCiphertext &x, 
       */
     // chrono::high_resolution_clock::time_point time_start, time_end;
     // time_start = high_resolution_clock::now();
-    double D = x.scale();  // maybe not init_scale but preserved
+    double D = x.scale(); // maybe not init_scale but preserved
 
     uint64_t p = get_modulus(x, 1);
     uint64_t q = get_modulus(x, 2);
@@ -528,61 +528,61 @@ void CKKSEvaluator::eval_odd_deg9_poly(vector<double> &a, PhantomCiphertext &x, 
 
     evaluator.square(x, x2);
     evaluator.relinearize_inplace(x2, *relin_keys);
-    evaluator.rescale_to_next_inplace(x2);  // L-1
+    evaluator.rescale_to_next_inplace(x2); // L-1
 
-    evaluator.mod_switch_to_next_inplace(x);  // L-1
+    evaluator.mod_switch_to_next_inplace(x); // L-1
     evaluator.multiply(x2, x, x3);
     evaluator.relinearize_inplace(x3, *relin_keys);
-    evaluator.rescale_to_next_inplace(x3);  // L-2
+    evaluator.rescale_to_next_inplace(x3); // L-2
 
     evaluator.square(x3, x6);
     evaluator.relinearize_inplace(x6, *relin_keys);
-    evaluator.rescale_to_next_inplace(x6);  // L-3
+    evaluator.rescale_to_next_inplace(x6); // L-3
 
     PhantomPlaintext a1, a3, a5, a7, a9;
 
     // Build T1
     PhantomCiphertext T1;
     double a5_scale = D / x2.scale() * p / x3.scale() * q;
-    encoder.encode(a[5], x2.params_id(), a5_scale, a5);  // L-1
+    encoder.encode(a[5], x2.params_id(), a5_scale, a5); // L-1
     evaluator.multiply_plain(x2, a5, T1);
-    evaluator.rescale_to_next_inplace(T1);  // L-2
+    evaluator.rescale_to_next_inplace(T1); // L-2
 
     // Update: using a_scales[3] is only approx. correct, so we directly use T1.scale()
-    encoder.encode(a[3], T1.params_id(), T1.scale(), a3);  // L-2
+    encoder.encode(a[3], T1.params_id(), T1.scale(), a3); // L-2
 
-    evaluator.add_plain_inplace(T1, a3);  // L-2
+    evaluator.add_plain_inplace(T1, a3); // L-2
     evaluator.multiply_inplace(T1, x3);
     evaluator.relinearize_inplace(T1, *relin_keys);
-    evaluator.rescale_to_next_inplace(T1);  // L-3
+    evaluator.rescale_to_next_inplace(T1); // L-3
 
     // Build T2
     PhantomCiphertext T2;
     PhantomPlaintext a9_switched;
     double a9_scale = D / x3.scale() * r / x6.scale() * q;
-    encoder.encode(a[9], x3.params_id(), a9_scale, a9);  // L-2
+    encoder.encode(a[9], x3.params_id(), a9_scale, a9); // L-2
     evaluator.multiply_plain(x3, a9, T2);
-    evaluator.rescale_to_next_inplace(T2);  // L-3
+    evaluator.rescale_to_next_inplace(T2); // L-3
 
     PhantomCiphertext a7x;
     double a7_scale = T2.scale() / x.scale() * p;
-    encoder.encode(a[7], x.params_id(), a7_scale, a7);  // L-1 (x was modswitched)
+    encoder.encode(a[7], x.params_id(), a7_scale, a7); // L-1 (x was modswitched)
     evaluator.multiply_plain(x, a7, a7x);
-    evaluator.rescale_to_next_inplace(a7x);                // L-2
-    evaluator.mod_switch_to_inplace(a7x, T2.params_id());  // L-3
+    evaluator.rescale_to_next_inplace(a7x);               // L-2
+    evaluator.mod_switch_to_inplace(a7x, T2.params_id()); // L-3
 
     double mid_scale = (T2.scale() + a7x.scale()) / 2;
-    T2.scale() = a7x.scale() = mid_scale;  // this is the correct scale now, need to set it still to avoid SEAL assert
-    evaluator.add_inplace(T2, a7x);        // L-3
+    T2.scale() = a7x.scale() = mid_scale; // this is the correct scale now, need to set it still to avoid SEAL assert
+    evaluator.add_inplace(T2, a7x);       // L-3
     evaluator.multiply_inplace(T2, x6);
     evaluator.relinearize_inplace(T2, *relin_keys);
-    evaluator.rescale_to_next_inplace(T2);  // L-4
+    evaluator.rescale_to_next_inplace(T2); // L-4
 
     // Build T3
     PhantomCiphertext T3;
-    encoder.encode(a[1], x.params_id(), p, a1);  // L-1 (x was modswitched)
+    encoder.encode(a[1], x.params_id(), p, a1); // L-1 (x was modswitched)
     evaluator.multiply_plain(x, a1, T3);
-    evaluator.rescale_to_next_inplace(T3);  // L-2
+    evaluator.rescale_to_next_inplace(T3); // L-2
 
     // T1, T2 and T3 should be on the same scale up to floating point
     // but we still need to set them manually to avoid SEAL assert
@@ -590,9 +590,9 @@ void CKKSEvaluator::eval_odd_deg9_poly(vector<double> &a, PhantomCiphertext &x, 
     T1.scale() = T2.scale() = T3.scale() = mid3_scale;
 
     dest = T2;
-    evaluator.mod_switch_to_inplace(T1, dest.params_id());  // L-4
+    evaluator.mod_switch_to_inplace(T1, dest.params_id()); // L-4
     evaluator.add_inplace(dest, T1);
-    evaluator.mod_switch_to_inplace(T3, dest.params_id());  // L-4
+    evaluator.mod_switch_to_inplace(T3, dest.params_id()); // L-4
     evaluator.add_inplace(dest, T3);
 
     /////////////////////////////////////////
@@ -604,7 +604,7 @@ void CKKSEvaluator::eval_odd_deg9_poly(vector<double> &a, PhantomCiphertext &x, 
 
 PhantomCiphertext CKKSEvaluator::sgn_eval(PhantomCiphertext x, int d_g, int d_f, double sgn_factor) {
     // Compute sign function coefficients
-    vector<double> f4_coeffs = F4_COEFFS;  // 用不同的系数组成的9次多项式，组合
+    vector<double> f4_coeffs = F4_COEFFS; // 用不同的系数组成的9次多项式，组合
     vector<double> g4_coeffs = G4_COEFFS;
     vector<double> f4_coeffs_last(10, 0.0);
     vector<double> g4_coeffs_last(10, 0.0);
@@ -673,7 +673,7 @@ PhantomCiphertext CKKSEvaluator::exp(PhantomCiphertext x) {
     return x;
 }
 
-PhantomCiphertext CKKSEvaluator::inverse(PhantomCiphertext x, int iter) {  // 牛顿法
+PhantomCiphertext CKKSEvaluator::inverse(PhantomCiphertext x, int iter) { // 牛顿法
     PhantomCiphertext y, tmp, res;
     PhantomPlaintext one;
 
@@ -684,10 +684,10 @@ PhantomCiphertext CKKSEvaluator::inverse(PhantomCiphertext x, int iter) {  // �
 
     res = tmp;
 
-    for (int i = 0; i < iter; i++) {
+    for (int i = 0; i < iter; i++) { // 4
         evaluator.square_inplace(y);
         evaluator.relinearize_inplace(y, *relin_keys);
-        evaluator.rescale_to_next_inplace(y);
+        evaluator.rescale_to_next_inplace(y); // 1个level
 
         encoder.encode(1.0, y.params_id(), y.scale(), one);
         evaluator.add_plain(y, one, tmp);
@@ -695,7 +695,7 @@ PhantomCiphertext CKKSEvaluator::inverse(PhantomCiphertext x, int iter) {  // �
         evaluator.mod_switch_to_inplace(res, tmp.params_id());
         evaluator.multiply_inplace(res, tmp);
         evaluator.relinearize_inplace(res, *relin_keys);
-        evaluator.rescale_to_next_inplace(res);
+        evaluator.rescale_to_next_inplace(res); // 1个level
     }
 
     return res;

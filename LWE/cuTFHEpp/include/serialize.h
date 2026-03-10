@@ -72,7 +72,7 @@ namespace cuTFHEpp {
         using Archive = std::conditional_t<IS_LOAD_KEY(type), cereal::PortableBinaryInputArchive, cereal::PortableBinaryOutputArchive>;
         using FileStream = std::conditional_t<IS_LOAD_KEY(type), std::ifstream, std::ofstream>;
 
-        std::string file_path = std::string("/mnt/data2/home/syt/data/Libra/LWE/key/") + SECRET_KEY_NAME;
+        std::string file_path = std::string("/mnt/data0/home/syt/FlyHE/LWE/key") + SECRET_KEY_NAME;
         FileStream fs{file_path, std::ios::binary};
         Archive ar(fs);
         sk.serialize(ar);
@@ -85,7 +85,7 @@ namespace cuTFHEpp {
         using Archive = std::conditional_t<IS_LOAD_KEY(type), cereal::PortableBinaryInputArchive, cereal::PortableBinaryOutputArchive>;
         using FileStream = std::conditional_t<IS_LOAD_KEY(type), std::ifstream, std::ofstream>;
 
-        std::string file_path = get_evalkey_path<P>("/mnt/data2/home/syt/data/Libra/LWE/key/");
+        std::string file_path = get_evalkey_path<P>("/mnt/data0/home/syt/FlyHE/LWE/key");
         FileStream fs{file_path, std::ios::binary};
         Archive ar(fs);
         evalkey_serilize<P>(ek, ar);
@@ -129,4 +129,4 @@ namespace cuTFHEpp {
 
         load_evalkeys<void, Keys...>(sk, ek);
     }
-}  // namespace cuTFHEpp
+} // namespace cuTFHEpp
