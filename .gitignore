@@ -6,7 +6,7 @@ LWE/*.key
 examples/*
 
 ### VisualStudioCode template
-.vscode/*
+.vscode/
 # .vscode/*
 # !.vscode/settings.json
 # !.vscode/tasks.json
